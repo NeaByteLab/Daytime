@@ -16,40 +16,6 @@ hero:
       variant: minimal
 ---
 
-## Quick Example
+## Why Daytime?
 
-```typescript
-import daytime from '@neabyte/daytime'
-
-// Create and format
-const date = daytime('2025-11-15T14:30:45Z')
-console.log(date.format('YYYY-MM-DD Do dddd'))
-// "2025-11-15 15th Saturday"
-
-// Locale support
-console.log(date.locale('en').format('dddd, MMMM Do YYYY'))
-// "Saturday, November 15th 2025"
-
-// Chain operations
-const result = date
-  .add(3, 'month')
-  .subtract(5, 'day')
-  .startOf('week')
-  .nextBusinessDay()
-  .format('YYYY-MM-DD dddd')
-console.log(result)
-// "2026-02-09 Monday"
-```
-
-## Installation
-
-```bash
-# npm
-npm install @neabyte/daytime
-
-# Deno
-deno add jsr:@neabyte/daytime
-
-# CDN (browser)
-import daytime from 'https://esm.sh/@neabyte/daytime'
-```
+JavaScript's Date object is fine until you need to figure out if it's a business day, format it in French, or calculate the next Monday. Daytime tries to cover those cases—weekends, leap years, timezones, locales—so you don't have to. Chain methods together, format with tokens, and move on to the next thing on your list, because debugging date logic shouldn't take all day, and we've learned that the hard way.
