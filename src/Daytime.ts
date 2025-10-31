@@ -210,11 +210,29 @@ export class Daytime implements Types.IDaytime {
   }
 
   /**
+   * Checks if this date is in the future (after today).
+   * @returns True if this date is in the future, false otherwise
+   */
+  isFuture(): boolean {
+    const now = new Date()
+    return Utils.isAfter(this.date, now)
+  }
+
+  /**
    * Checks if the year of the date is a leap year.
    * @returns True if the year is a leap year, false otherwise
    */
   isLeapYear(): boolean {
     return Helpers.isLeapYear(this.date)
+  }
+
+  /**
+   * Checks if this date is in the past (before today).
+   * @returns True if this date is in the past, false otherwise
+   */
+  isPast(): boolean {
+    const now = new Date()
+    return Utils.isBefore(this.date, now)
   }
 
   /**
@@ -226,6 +244,24 @@ export class Daytime implements Types.IDaytime {
   isSame(other: Types.DateInput, unit?: Types.TimeUnit): boolean {
     const otherDate = Utils.parseDateInput(other)
     return Utils.isSame(this.date, otherDate, unit)
+  }
+
+  /**
+   * Checks if this date is the same day as another date.
+   * @param other - The other date to compare with
+   * @returns True if dates are on the same day, false otherwise
+   */
+  isSameDay(other: Types.DateInput): boolean {
+    return this.isSame(other, 'day')
+  }
+
+  /**
+   * Checks if this date is the same month as another date.
+   * @param other - The other date to compare with
+   * @returns True if dates are in the same month, false otherwise
+   */
+  isSameMonth(other: Types.DateInput): boolean {
+    return this.isSame(other, 'month')
   }
 
   /**
@@ -251,6 +287,88 @@ export class Daytime implements Types.IDaytime {
   }
 
   /**
+   * Checks if this date is the same quarter as another date.
+   * @param other - The other date to compare with
+   * @returns True if dates are in the same quarter, false otherwise
+   */
+  isSameQuarter(other: Types.DateInput): boolean {
+    return this.isSame(other, 'quarter')
+  }
+
+  /**
+   * Checks if this date is the same week as another date.
+   * @param other - The other date to compare with
+   * @returns True if dates are in the same week, false otherwise
+   */
+  isSameWeek(other: Types.DateInput): boolean {
+    return this.isSame(other, 'week')
+  }
+
+  /**
+   * Checks if this date is the same year as another date.
+   * @param other - The other date to compare with
+   * @returns True if dates are in the same year, false otherwise
+   */
+  isSameYear(other: Types.DateInput): boolean {
+    return this.isSame(other, 'year')
+  }
+
+  /**
+   * Checks if this date is in the current month.
+   * @returns True if this date is in the current month, false otherwise
+   */
+  isThisMonth(): boolean {
+    const now = new Date()
+    return this.isSame(now, 'month')
+  }
+
+  /**
+   * Checks if this date is in the current quarter.
+   * @returns True if this date is in the current quarter, false otherwise
+   */
+  isThisQuarter(): boolean {
+    const now = new Date()
+    return this.isSame(now, 'quarter')
+  }
+
+  /**
+   * Checks if this date is in the current week.
+   * @returns True if this date is in the current week, false otherwise
+   */
+  isThisWeek(): boolean {
+    const now = new Date()
+    return this.isSame(now, 'week')
+  }
+
+  /**
+   * Checks if this date is in the current year.
+   * @returns True if this date is in the current year, false otherwise
+   */
+  isThisYear(): boolean {
+    const now = new Date()
+    return this.isSame(now, 'year')
+  }
+
+  /**
+   * Checks if this date is today.
+   * @returns True if this date is today, false otherwise
+   */
+  isToday(): boolean {
+    const now = new Date()
+    return this.isSame(now, 'day')
+  }
+
+  /**
+   * Checks if this date is tomorrow.
+   * @returns True if this date is tomorrow, false otherwise
+   */
+  isTomorrow(): boolean {
+    const tomorrow = new Date()
+    tomorrow.setDate(tomorrow.getDate() + 1)
+    return this.isSame(tomorrow, 'day')
+  }
+
+  /**
    * Checks if the date is valid.
    * @returns True if the date is valid, false otherwise
    */
@@ -272,6 +390,16 @@ export class Daytime implements Types.IDaytime {
    */
   isWeekend(): boolean {
     return Helpers.isWeekend(this.date)
+  }
+
+  /**
+   * Checks if this date is yesterday.
+   * @returns True if this date is yesterday, false otherwise
+   */
+  isYesterday(): boolean {
+    const yesterday = new Date()
+    yesterday.setDate(yesterday.getDate() - 1)
+    return this.isSame(yesterday, 'day')
   }
 
   /**

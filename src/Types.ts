@@ -76,20 +76,48 @@ export interface IDaytime {
   isBusinessDay(): boolean
   /** Checks if the date is in daylight saving time */
   isDST(): boolean
+  /** Checks if the date is in the future */
+  isFuture(): boolean
   /** Checks if the date is a leap year */
   isLeapYear(): boolean
+  /** Checks if the date is in the past */
+  isPast(): boolean
   /** Checks if the date is the same as another date */
   isSame(other: DateInput, unit?: TimeUnit): boolean
+  /** Checks if the date is the same day as another date */
+  isSameDay(other: DateInput): boolean
+  /** Checks if the date is the same month as another date */
+  isSameMonth(other: DateInput): boolean
   /** Checks if the date is the same as or after another date */
   isSameOrAfter(other: DateInput, unit?: TimeUnit): boolean
   /** Checks if the date is the same as or before another date */
   isSameOrBefore(other: DateInput, unit?: TimeUnit): boolean
+  /** Checks if the date is the same quarter as another date */
+  isSameQuarter(other: DateInput): boolean
+  /** Checks if the date is the same week as another date */
+  isSameWeek(other: DateInput): boolean
+  /** Checks if the date is the same year as another date */
+  isSameYear(other: DateInput): boolean
+  /** Checks if the date is in the current month */
+  isThisMonth(): boolean
+  /** Checks if the date is in the current quarter */
+  isThisQuarter(): boolean
+  /** Checks if the date is in the current week */
+  isThisWeek(): boolean
+  /** Checks if the date is in the current year */
+  isThisYear(): boolean
+  /** Checks if the date is today */
+  isToday(): boolean
+  /** Checks if the date is tomorrow */
+  isTomorrow(): boolean
   /** Checks if the date is valid */
   isValid(): boolean
   /** Checks if the date is in UTC */
   isUTC(): boolean
   /** Checks if the date is a weekend */
   isWeekend(): boolean
+  /** Checks if the date is yesterday */
+  isYesterday(): boolean
   /** Gets the ISO week number */
   isoWeek(): number
   /** Gets the ISO weekday number */

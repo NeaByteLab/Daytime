@@ -38,6 +38,20 @@ Deno.test('Index: should export IDaytime interface', () => {
   expect(typeof instance.isSameOrBefore).toEqual('function')
   expect(typeof instance.isSameOrAfter).toEqual('function')
   expect(typeof instance.isBetween).toEqual('function')
+  expect(typeof instance.isFuture).toEqual('function')
+  expect(typeof instance.isPast).toEqual('function')
+  expect(typeof instance.isSameDay).toEqual('function')
+  expect(typeof instance.isSameMonth).toEqual('function')
+  expect(typeof instance.isSameQuarter).toEqual('function')
+  expect(typeof instance.isSameWeek).toEqual('function')
+  expect(typeof instance.isSameYear).toEqual('function')
+  expect(typeof instance.isThisMonth).toEqual('function')
+  expect(typeof instance.isThisQuarter).toEqual('function')
+  expect(typeof instance.isThisWeek).toEqual('function')
+  expect(typeof instance.isThisYear).toEqual('function')
+  expect(typeof instance.isToday).toEqual('function')
+  expect(typeof instance.isTomorrow).toEqual('function')
+  expect(typeof instance.isYesterday).toEqual('function')
 })
 
 Deno.test('Index: should allow importing all types', () => {
@@ -120,7 +134,7 @@ Deno.test('Utility: valueOf - should support sorting', () => {
     new Date('2026-01-15T12:00:00Z'),
     new Date('2026-01-16T12:00:00Z')
   ]
-  const sorted = dates.map((d) => daytime(d)).sort((a, b) => a.valueOf() - b.valueOf())
+  const sorted = dates.map(d => daytime(d)).sort((a, b) => a.valueOf() - b.valueOf())
   expect(sorted[0]?.valueOf()).toEqual(dates[1]?.getTime())
   expect(sorted[1]?.valueOf()).toEqual(dates[2]?.getTime())
   expect(sorted[2]?.valueOf()).toEqual(dates[0]?.getTime())
@@ -147,4 +161,27 @@ Deno.test('Utility: valueOf - should work with implicit conversion', () => {
   const result = Number(instance)
   expect(result).toEqual(date.getTime())
   expect(result).toEqual(instance.valueOf())
+})
+
+Deno.test('Query: convenience methods should be available from main export', () => {
+  const now = new Date()
+  const future = new Date(now.getTime() + 24 * 60 * 60 * 1000)
+  const past = new Date(now.getTime() - 24 * 60 * 60 * 1000)
+  expect(typeof daytime(now).isToday()).toEqual('boolean')
+  expect(typeof daytime(future).isFuture()).toEqual('boolean')
+  expect(typeof daytime(past).isPast()).toEqual('boolean')
+  expect(typeof daytime(now).isThisWeek()).toEqual('boolean')
+  expect(typeof daytime(now).isThisMonth()).toEqual('boolean')
+  expect(typeof daytime(now).isThisYear()).toEqual('boolean')
+  expect(typeof daytime(now).isThisQuarter()).toEqual('boolean')
+})
+
+Deno.test('Query: isSame convenience methods should work with main export', () => {
+  const date1 = new Date('2026-01-15T10:00:00Z')
+  const date2 = new Date('2026-01-15T14:00:00Z')
+  expect(daytime(date1).isSameDay(date2)).toBe(expectedTrue)
+  expect(daytime(date1).isSameMonth(date2)).toBe(expectedTrue)
+  expect(daytime(date1).isSameYear(date2)).toBe(expectedTrue)
+  expect(typeof daytime(date1).isSameWeek(date2)).toEqual('boolean')
+  expect(typeof daytime(date1).isSameQuarter(date2)).toEqual('boolean')
 })
