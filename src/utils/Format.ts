@@ -1,13 +1,15 @@
-import * as Constants from '@app/Constant.ts'
 import * as Helpers from '@helpers/index.ts'
+import * as Locale from '@locale/index.ts'
 
 /**
  * Formats a date according to the specified pattern.
  * @param date - The date to format
  * @param pattern - The format pattern string
+ * @param localeCode - Optional locale code (defaults to default locale)
  * @returns The formatted date string
  */
-export function formatDate(date: Date, pattern: string): string {
+export function formatDate(date: Date, pattern: string, localeCode?: string): string {
+  const locale = Locale.getLocale(localeCode)
   const components = Helpers.extractDateComponents(date)
   const year = components.year
   const month = components.month
@@ -17,8 +19,10 @@ export function formatDate(date: Date, pattern: string): string {
   const second = components.second
   const millisecond = components.millisecond
   const dayOfWeek = date.getDay()
-  const dayName = Constants.dayNames[dayOfWeek] ?? 'Unknown'
-  const monthName = Constants.monthNames[month - 1] ?? 'Unknown'
+  const dayName = locale.dayNames[dayOfWeek] ?? 'Unknown'
+  const dayNameShort = locale.dayNamesShort[dayOfWeek] ?? 'Unknown'
+  const monthName = locale.monthNames[month - 1] ?? 'Unknown'
+  const monthNameShort = locale.monthNamesShort[month - 1] ?? 'Unknown'
   const tokens: Record<string, string> = {
     YYYY: year.toString(),
     YY: (year % 100).toString().padStart(2, '0'),
@@ -38,11 +42,11 @@ export function formatDate(date: Date, pattern: string): string {
     SS: Helpers.padNumber(Math.floor(millisecond / 10), 2),
     S: Math.floor(millisecond / 100).toString(),
     dddd: dayName,
-    ddd: dayName.substring(0, 3),
+    ddd: dayNameShort,
     dd: Helpers.padNumber(dayOfWeek, 2),
     d: dayOfWeek.toString(),
     MMMM: monthName,
-    MMM: monthName.substring(0, 3),
+    MMM: monthNameShort,
     A: hour >= 12 ? 'PM' : 'AM',
     a: hour >= 12 ? 'pm' : 'am'
   }

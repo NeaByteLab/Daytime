@@ -96,6 +96,7 @@
     "@std/expect": "jsr:@std/expect@^1.0.17",
     "@app/": "./src/",
     "@helpers/": "./src/helpers/",
+    "@locale/": "./src/locale/",
     "@utils/": "./src/utils/",
     "@tests/": "./tests/"
   },

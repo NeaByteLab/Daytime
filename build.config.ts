@@ -15,6 +15,7 @@ export default defineBuildConfig({
   /** Aliases for the build */
   alias: {
     '@app': resolve(__dirname, 'src'),
+    '@locale': resolve(__dirname, 'src/locale'),
     '@helpers': resolve(__dirname, 'src/helpers'),
     '@utils': resolve(__dirname, 'src/utils')
   },

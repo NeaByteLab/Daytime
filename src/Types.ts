@@ -4,32 +4,41 @@
 export type DateInput = Date | string | number | { toDate(): Date }
 
 /**
- * Inclusivity mode for date range comparisons.
+ * Object containing date component values.
  */
-export type Inclusivity = '[]' | '()' | '[)' | '(]'
+export interface DateComponents {
+  /** Day of month value */
+  day: number
+  /** Hour value (0-23) */
+  hour: number
+  /** Millisecond value (0-999) */
+  millisecond: number
+  /** Minute value (0-59) */
+  minute: number
+  /** Month value (1-12, 1-indexed) */
+  month: number
+  /** Second value (0-59) */
+  second: number
+  /** Year value */
+  year: number
+}
 
 /**
- * Options object for setting multiple date components.
+ * Object containing parsed date parts.
  */
-export interface SetOptions {
+export interface DateParts {
   /** Day of month value */
-  day?: number
+  day: number
   /** Hour value (0-23) */
-  hour?: number
-  /** Millisecond value (0-999) */
-  millisecond?: number
+  hour: number
   /** Minute value (0-59) */
-  minute?: number
-  /** Month value (1-12) */
-  month?: number
-  /** Quarter value (1-4) */
-  quarter?: number
+  minute: number
+  /** Month value (0-11, 0-indexed) */
+  month: number
   /** Second value (0-59) */
-  second?: number
-  /** Week value */
-  week?: number
+  second: number
   /** Year value */
-  year?: number
+  year: number
 }
 
 /**
@@ -136,6 +145,9 @@ export interface IDaytime {
   lastWeekday(weekday: number): IDaytime
   /** Gets the local date */
   local(): IDaytime
+  /** Gets or sets the locale */
+  locale(): string
+  locale(code: LocaleCode): IDaytime
   /** Gets the millisecond */
   millisecond(): number
   /** Gets the minute */
@@ -152,10 +164,10 @@ export interface IDaytime {
   nthWeekday(n: number, weekday: number): IDaytime
   /** Gets the previous business day */
   prevBusinessDay(): IDaytime
-  /** Gets the previous occurrence of a weekday */
-  prevWeekday(weekday: number): IDaytime
   /** Gets the previous business day */
   previousBusinessDay(): IDaytime
+  /** Gets the previous occurrence of a weekday */
+  prevWeekday(weekday: number): IDaytime
   /** Gets the quarter */
   quarter(): number
   /** Gets the second */
@@ -182,13 +194,13 @@ export interface IDaytime {
   toJSON(): string
   /** Converts the date to an object */
   toObject(): {
-    year: number
-    month: number
     day: number
     hour: number
-    minute: number
-    second: number
     millisecond: number
+    minute: number
+    month: number
+    second: number
+    year: number
   }
   /** Converts the date to a string */
   toString(): string
@@ -215,73 +227,148 @@ export interface IDaytime {
 }
 
 /**
+ * Inclusivity mode for date range comparisons.
+ */
+export type Inclusivity = '(]' | '()' | '[)' | '[]'
+
+/**
+ * Locale code type (BCP 47 format).
+ */
+export type LocaleCode = string
+
+/**
+ * Locale data structure for internationalization.
+ */
+export interface LocaleData {
+  /** Locale code for Intl.DateTimeFormat */
+  code: string
+  /** Full day names (Sunday through Saturday) */
+  dayNames: [string, string, string, string, string, string, string]
+  /** Short day names (Sun through Sat) */
+  dayNamesShort: [string, string, string, string, string, string, string]
+  /** Full month names (January through December) */
+  monthNames: [
+    string,
+    string,
+    string,
+    string,
+    string,
+    string,
+    string,
+    string,
+    string,
+    string,
+    string,
+    string
+  ]
+  /** Short month names (Jan through Dec) */
+  monthNamesShort: [
+    string,
+    string,
+    string,
+    string,
+    string,
+    string,
+    string,
+    string,
+    string,
+    string,
+    string,
+    string
+  ]
+  /** Relative time translations */
+  relative: {
+    /** Future tense template: "in {value} {unit}" */
+    future: string
+    /** "just now" translation */
+    now: string
+    /** Past tense template: "{value} {unit} ago" */
+    past: string
+    /** Time unit translations */
+    units: RelativeTimeUnits
+  }
+}
+
+/**
+ * Relative time unit translations.
+ */
+export interface RelativeTimeUnits {
+  /** Plural unit names */
+  plural: {
+    day: string
+    hour: string
+    minute: string
+    month: string
+    second: string
+    week: string
+    year: string
+  }
+  /** Singular unit names */
+  singular: {
+    day: string
+    hour: string
+    minute: string
+    month: string
+    second: string
+    week: string
+    year: string
+  }
+}
+
+/**
+ * Options object for setting multiple date components.
+ */
+export interface SetOptions {
+  /** Day of month value */
+  day?: number
+  /** Hour value (0-23) */
+  hour?: number
+  /** Millisecond value (0-999) */
+  millisecond?: number
+  /** Minute value (0-59) */
+  minute?: number
+  /** Month value (1-12) */
+  month?: number
+  /** Quarter value (1-4) */
+  quarter?: number
+  /** Second value (0-59) */
+  second?: number
+  /** Week value */
+  week?: number
+  /** Year value */
+  year?: number
+}
+
+/**
  * Union type representing all valid time unit strings.
  */
 export type TimeUnit =
-  | 'year'
-  | 'years'
-  | 'y'
-  | 'quarter'
-  | 'quarters'
-  | 'Q'
-  | 'month'
-  | 'months'
-  | 'M'
-  | 'week'
-  | 'weeks'
-  | 'w'
-  | 'isoWeek'
-  | 'isoWeeks'
+  | 'd'
   | 'day'
   | 'days'
-  | 'd'
+  | 'h'
   | 'hour'
   | 'hours'
-  | 'h'
-  | 'minute'
-  | 'minutes'
+  | 'isoWeek'
+  | 'isoWeeks'
   | 'm'
-  | 'second'
-  | 'seconds'
-  | 's'
+  | 'M'
   | 'millisecond'
   | 'milliseconds'
+  | 'minute'
+  | 'minutes'
+  | 'month'
+  | 'months'
   | 'ms'
-
-/**
- * Object containing date component values.
- */
-export interface DateComponents {
-  /** Year value */
-  year: number
-  /** Month value (1-12, 1-indexed) */
-  month: number
-  /** Day of month value */
-  day: number
-  /** Hour value (0-23) */
-  hour: number
-  /** Minute value (0-59) */
-  minute: number
-  /** Second value (0-59) */
-  second: number
-  /** Millisecond value (0-999) */
-  millisecond: number
-}
-
-/**
- * Object containing parsed date parts.
- */
-export interface DateParts {
-  /** Year value */
-  year: number
-  /** Month value (0-11, 0-indexed) */
-  month: number
-  /** Day of month value */
-  day: number
-  /** Hour value (0-23) */
-  hour: number
-  /** Minute value (0-59) */
-  minute: number
-  /** Second value (0-59) */
-  second: number
-}
+  | 'Q'
+  | 'quarter'
+  | 'quarters'
+  | 's'
+  | 'second'
+  | 'seconds'
+  | 'w'
+  | 'week'
+  | 'weeks'
+  | 'y'
+  | 'year'
+  | 'years'

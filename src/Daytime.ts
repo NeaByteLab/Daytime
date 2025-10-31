@@ -1,5 +1,6 @@
 import type * as Types from '@app/Types.ts'
 import * as Helpers from '@helpers/index.ts'
+import * as Locale from '@locale/index.ts'
 import * as Utils from '@utils/index.ts'
 
 /**
@@ -9,13 +10,22 @@ import * as Utils from '@utils/index.ts'
 export class Daytime implements Types.IDaytime {
   /** The date object */
   private readonly date: Date
+  /** The locale code for this instance */
+  private readonly localeCode: string
 
   /**
    * Creates a new Daytime instance.
    * @param input - Optional date input (Date, number, string, or object with toDate method)
+   * @param localeCode - Optional locale code (defaults to default locale)
    */
-  constructor(input?: Types.DateInput) {
+  constructor(input?: Types.DateInput, localeCode?: string) {
     this.date = Utils.parseDateInput(input)
+    if (localeCode) {
+      const normalized = Locale.normalizeLocaleCode(localeCode)
+      this.localeCode = normalized
+    } else {
+      this.localeCode = Locale.getDefaultLocale()
+    }
   }
 
   /**
@@ -26,7 +36,7 @@ export class Daytime implements Types.IDaytime {
    */
   add(value: number, unit: Types.TimeUnit): Types.IDaytime {
     const newDate = Utils.addTime(this.date, value, unit)
-    return new Daytime(newDate)
+    return new Daytime(newDate, this.localeCode)
   }
 
   /**
@@ -50,7 +60,7 @@ export class Daytime implements Types.IDaytime {
    * @returns A new Daytime instance with the same date
    */
   clone(): Types.IDaytime {
-    return new Daytime(Helpers.cloneDate(this.date))
+    return new Daytime(Helpers.cloneDate(this.date), this.localeCode)
   }
 
   /**
@@ -114,7 +124,7 @@ export class Daytime implements Types.IDaytime {
    */
   endOf(unit: Types.TimeUnit): Types.IDaytime {
     const newDate = Utils.endOf(this.date, unit)
-    return new Daytime(newDate)
+    return new Daytime(newDate, this.localeCode)
   }
 
   /**
@@ -123,7 +133,7 @@ export class Daytime implements Types.IDaytime {
    * @returns The formatted date string
    */
   format(pattern: string): string {
-    return Utils.formatDate(this.date, pattern)
+    return Utils.formatDate(this.date, pattern, this.localeCode)
   }
 
   /**
@@ -131,7 +141,26 @@ export class Daytime implements Types.IDaytime {
    * @returns A relative time string (e.g., "2 hours ago", "in 3 days")
    */
   fromNow(): string {
-    return Utils.getRelativeTime(this.date)
+    return Utils.getRelativeTime(this.date, this.localeCode)
+  }
+
+  /**
+   * Gets the current locale code.
+   * @returns The locale code
+   */
+  locale(): string
+  /**
+   * Sets the locale and returns a new Daytime instance.
+   * @param code - The locale code to set
+   * @returns A new Daytime instance with the locale set
+   */
+  locale(code: Types.LocaleCode): Types.IDaytime
+  locale(code?: Types.LocaleCode): string | Types.IDaytime {
+    if (code === undefined) {
+      return this.localeCode
+    }
+    const normalized = Locale.normalizeLocaleCode(code)
+    return new Daytime(this.date, normalized)
   }
 
   /**
@@ -150,7 +179,7 @@ export class Daytime implements Types.IDaytime {
    */
   getDaysInMonth(): Types.IDaytime[] {
     const days = Helpers.getDaysInMonth(this.date)
-    return days.map((day) => new Daytime(day))
+    return days.map((day) => new Daytime(day, this.localeCode))
   }
 
   /**
@@ -159,7 +188,7 @@ export class Daytime implements Types.IDaytime {
    */
   getMonthsInYear(): Types.IDaytime[] {
     const months = Helpers.getMonthsInYear(this.date)
-    return months.map((month) => new Daytime(month))
+    return months.map((month) => new Daytime(month, this.localeCode))
   }
 
   /**
@@ -169,7 +198,7 @@ export class Daytime implements Types.IDaytime {
    */
   getWeeksInMonth(): Types.IDaytime[][] {
     const weeks = Helpers.getWeeksInMonth(this.date)
-    return weeks.map((week) => week.map((day) => new Daytime(day)))
+    return weeks.map((week) => week.map((day) => new Daytime(day, this.localeCode)))
   }
 
   /**
@@ -470,7 +499,7 @@ export class Daytime implements Types.IDaytime {
    */
   local(): Types.IDaytime {
     const localDate = Helpers.cloneDate(this.date)
-    return new Daytime(localDate)
+    return new Daytime(localDate, this.localeCode)
   }
 
   /**
@@ -504,7 +533,7 @@ export class Daytime implements Types.IDaytime {
    */
   lastWeekday(weekday: number): Types.IDaytime {
     const newDate = Helpers.lastWeekday(this.date, weekday)
-    return new Daytime(newDate)
+    return new Daytime(newDate, this.localeCode)
   }
 
   /**
@@ -513,7 +542,7 @@ export class Daytime implements Types.IDaytime {
    */
   nearestWeekday(): Types.IDaytime {
     const newDate = Helpers.nearestWeekday(this.date)
-    return new Daytime(newDate)
+    return new Daytime(newDate, this.localeCode)
   }
 
   /**
@@ -522,7 +551,7 @@ export class Daytime implements Types.IDaytime {
    */
   nextBusinessDay(): Types.IDaytime {
     const newDate = Helpers.nextBusinessDay(this.date)
-    return new Daytime(newDate)
+    return new Daytime(newDate, this.localeCode)
   }
 
   /**
@@ -532,7 +561,7 @@ export class Daytime implements Types.IDaytime {
    */
   nextWeekday(weekday: number): Types.IDaytime {
     const newDate = Helpers.nextWeekday(this.date, weekday)
-    return new Daytime(newDate)
+    return new Daytime(newDate, this.localeCode)
   }
 
   /**
@@ -543,7 +572,7 @@ export class Daytime implements Types.IDaytime {
    */
   nthWeekday(n: number, weekday: number): Types.IDaytime {
     const newDate = Helpers.nthWeekday(this.date, n, weekday)
-    return new Daytime(newDate)
+    return new Daytime(newDate, this.localeCode)
   }
 
   /**
@@ -552,7 +581,7 @@ export class Daytime implements Types.IDaytime {
    */
   prevBusinessDay(): Types.IDaytime {
     const newDate = Helpers.prevBusinessDay(this.date)
-    return new Daytime(newDate)
+    return new Daytime(newDate, this.localeCode)
   }
 
   /**
@@ -562,7 +591,7 @@ export class Daytime implements Types.IDaytime {
    */
   prevWeekday(weekday: number): Types.IDaytime {
     const newDate = Helpers.prevWeekday(this.date, weekday)
-    return new Daytime(newDate)
+    return new Daytime(newDate, this.localeCode)
   }
 
   /**
@@ -610,10 +639,10 @@ export class Daytime implements Types.IDaytime {
         throw new Error('Value is required when setting a single component')
       }
       const newDate = Utils.setSingleComponent(this.date, optionsOrUnit, value)
-      return new Daytime(newDate)
+      return new Daytime(newDate, this.localeCode)
     }
     const newDate = Utils.setDateComponent(this.date, optionsOrUnit)
-    return new Daytime(newDate)
+    return new Daytime(newDate, this.localeCode)
   }
 
   /**
@@ -624,7 +653,7 @@ export class Daytime implements Types.IDaytime {
    */
   startOf(unit: Types.TimeUnit): Types.IDaytime {
     const newDate = Utils.startOf(this.date, unit)
-    return new Daytime(newDate)
+    return new Daytime(newDate, this.localeCode)
   }
 
   /**
@@ -635,7 +664,7 @@ export class Daytime implements Types.IDaytime {
    */
   subtract(value: number, unit: Types.TimeUnit): Types.IDaytime {
     const newDate = Utils.subtractTime(this.date, value, unit)
-    return new Daytime(newDate)
+    return new Daytime(newDate, this.localeCode)
   }
 
   /**
@@ -726,7 +755,7 @@ export class Daytime implements Types.IDaytime {
    */
   toTimezone(tz: string): Types.IDaytime {
     const newDate = Helpers.convertToTimezone(this.date, tz)
-    return new Daytime(newDate)
+    return new Daytime(newDate, this.localeCode)
   }
 
   /**
@@ -752,7 +781,7 @@ export class Daytime implements Types.IDaytime {
       components.second,
       components.millisecond
     )
-    return new Daytime(utcDate)
+    return new Daytime(utcDate, this.localeCode)
   }
 
   /**
