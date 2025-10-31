@@ -1,0 +1,71 @@
+{
+  "name": "@neabyte/daytime",
+  "version": "0.1.0",
+  "description": "Modern date library with chainable methods and rich formatting options",
+  "type": "module",
+  "main": "dist/Main.cjs",
+  "module": "dist/Main.mjs",
+  "types": "dist/Main.d.ts",
+  "exports": {
+    ".": {
+      "require": "./dist/Main.cjs",
+      "import": "./dist/Main.mjs",
+      "types": "./dist/Main.d.ts"
+    }
+  },
+  "scripts": {
+    "build": "unbuild --minify",
+    "clean": "rm -rf dist",
+    "prepublishOnly": "rm -rf dist && npm run build"
+  },
+  "keywords": [
+    "date",
+    "date-formatting",
+    "date-manipulation",
+    "datetime",
+    "format",
+    "immutable",
+    "iso-week",
+    "javascript",
+    "library",
+    "manipulation",
+    "moment",
+    "parse",
+    "query",
+    "time",
+    "timezone",
+    "typescript",
+    "utilities",
+    "utility",
+    "validate",
+    "validation"
+  ],
+  "devDependencies": {
+    "unbuild": "^3.6.1"
+  },
+  "author": {
+    "name": "NeaByteLab",
+    "email": "me@neabyte.com",
+    "url": "https://github.com/NeaByteLab"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/NeaByteLab/Daytime.git"
+  },
+  "bugs": {
+    "url": "https://github.com/NeaByteLab/Daytime/issues"
+  },
+  "homepage": "https://github.com/NeaByteLab/Daytime#readme",
+  "engines": {
+    "node": ">=22.0.0"
+  },
+  "files": [
+    "dist/**/*",
+    "README.md",
+    "LICENSE"
+  ],
+  "publishConfig": {
+    "access": "public"
+  }
+}
