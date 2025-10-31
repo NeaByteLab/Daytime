@@ -64,6 +64,12 @@ export interface IDaytime {
   fromNow(): string
   /** Gets the date component */
   get(unit: TimeUnit): number
+  /** Gets an array of all days in the month */
+  getDaysInMonth(): IDaytime[]
+  /** Gets an array of all months in the year */
+  getMonthsInYear(): IDaytime[]
+  /** Gets an array of all weeks in the month, each week containing Daytime instances */
+  getWeeksInMonth(): IDaytime[][]
   /** Gets the hour */
   hour(): number
   /** Checks if the date is after another date */
@@ -126,6 +132,8 @@ export interface IDaytime {
   isoWeekYear(): number
   /** Gets the number of ISO weeks in the year */
   isoWeeksInYear(): number
+  /** Gets the last occurrence of a weekday in the month */
+  lastWeekday(weekday: number): IDaytime
   /** Gets the local date */
   local(): IDaytime
   /** Gets the millisecond */
@@ -134,8 +142,6 @@ export interface IDaytime {
   minute(): number
   /** Gets the month */
   month(): number
-  /** Gets the last occurrence of a weekday in the month */
-  lastWeekday(weekday: number): IDaytime
   /** Gets the nearest weekday to this date */
   nearestWeekday(): IDaytime
   /** Gets the next business day */

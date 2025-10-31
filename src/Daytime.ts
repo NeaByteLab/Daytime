@@ -145,6 +145,34 @@ export class Daytime implements Types.IDaytime {
   }
 
   /**
+   * Gets an array of all days in the month.
+   * @returns An array of Daytime instances, one for each day in the month
+   */
+  getDaysInMonth(): Types.IDaytime[] {
+    const days = Helpers.getDaysInMonth(this.date)
+    return days.map((day) => new Daytime(day))
+  }
+
+  /**
+   * Gets an array of all months in the year.
+   * @returns An array of Daytime instances, one for the first day of each month
+   */
+  getMonthsInYear(): Types.IDaytime[] {
+    const months = Helpers.getMonthsInYear(this.date)
+    return months.map((month) => new Daytime(month))
+  }
+
+  /**
+   * Gets an array of all weeks in the month.
+   * Each week is represented by an array of Daytime instances for the days in that week.
+   * @returns An array of week arrays, where each week contains Daytime instances for the days in that week
+   */
+  getWeeksInMonth(): Types.IDaytime[][] {
+    const weeks = Helpers.getWeeksInMonth(this.date)
+    return weeks.map((week) => week.map((day) => new Daytime(day)))
+  }
+
+  /**
    * Gets the hour (0-23).
    * @returns The hour
    */

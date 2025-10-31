@@ -706,3 +706,91 @@ Deno.test('Daytime: weekday methods should maintain immutability', () => {
   date.prevWeekday(5)
   expect(date.toDate().getTime()).toEqual(originalTime)
 })
+
+Deno.test('Daytime: getDaysInMonth - should return all days in month', () => {
+  const date = daytime('2026-01-15')
+  const days = date.getDaysInMonth()
+  expect(days.length).toEqual(31)
+  expect(days[0].day()).toEqual(1)
+  expect(days[30].day()).toEqual(31)
+  expect(days.every((day) => day.month() === 1)).toEqual(expectedTrue)
+  expect(days.every((day) => day.year() === 2026)).toEqual(expectedTrue)
+})
+
+Deno.test('Daytime: getDaysInMonth - should work for different months', () => {
+  const jan = daytime('2026-01-15').getDaysInMonth()
+  const feb = daytime('2026-02-15').getDaysInMonth()
+  const apr = daytime('2026-04-15').getDaysInMonth()
+  expect(jan.length).toEqual(31)
+  expect(feb.length).toEqual(28)
+  expect(apr.length).toEqual(30)
+})
+
+Deno.test('Daytime: getDaysInMonth - should work with chaining', () => {
+  const days = daytime('2026-01-15').getDaysInMonth()
+  expect(days.length).toEqual(31)
+  expect(days[0].format('YYYY-MM-DD')).toEqual('2026-01-01')
+})
+
+Deno.test('Daytime: getMonthsInYear - should return all 12 months', () => {
+  const date = daytime('2026-01-15')
+  const months = date.getMonthsInYear()
+  expect(months.length).toEqual(12)
+  expect(months[0].month()).toEqual(1)
+  expect(months[11].month()).toEqual(12)
+  expect(months.every((m) => m.year() === 2026)).toEqual(expectedTrue)
+})
+
+Deno.test('Daytime: getMonthsInYear - should return sequential months', () => {
+  const date = daytime('2026-06-15')
+  const months = date.getMonthsInYear()
+  for (let i = 0; i < 12; i++) {
+    expect(months[i].month()).toEqual(i + 1)
+  }
+})
+
+Deno.test('Daytime: getMonthsInYear - should work with chaining', () => {
+  const months = daytime('2026-01-15').getMonthsInYear()
+  expect(months.length).toEqual(12)
+  expect(months[0].format('YYYY-MM-DD')).toEqual('2026-01-01')
+})
+
+Deno.test('Daytime: getWeeksInMonth - should return weeks array', () => {
+  const date = daytime('2026-01-15')
+  const weeks = date.getWeeksInMonth()
+  expect(weeks.length).toBeGreaterThanOrEqual(4)
+  expect(weeks.length).toBeLessThanOrEqual(6)
+  expect(Array.isArray(weeks[0])).toEqual(expectedTrue)
+})
+
+Deno.test('Daytime: getWeeksInMonth - should contain all days in month', () => {
+  const date = daytime('2026-01-15')
+  const weeks = date.getWeeksInMonth()
+  const allDays = weeks.flat()
+  expect(allDays.length).toEqual(31)
+  const uniqueDays = new Set(allDays.map((d) => d.format('YYYY-MM-DD')))
+  expect(uniqueDays.size).toEqual(31)
+})
+
+Deno.test('Daytime: getWeeksInMonth - should work for February', () => {
+  const date = daytime('2026-02-15')
+  const weeks = date.getWeeksInMonth()
+  const allDays = weeks.flat()
+  expect(allDays.length).toEqual(28)
+})
+
+Deno.test('Daytime: getWeeksInMonth - should work with chaining', () => {
+  const weeks = daytime('2026-01-15').getWeeksInMonth()
+  expect(weeks.length).toBeGreaterThan(0)
+  expect(weeks[0].length).toBeGreaterThan(0)
+  expect(typeof weeks[0][0].format).toEqual('function')
+})
+
+Deno.test('Daytime: calendar methods should maintain immutability', () => {
+  const date = daytime('2026-01-15')
+  const originalTime = date.toDate().getTime()
+  date.getDaysInMonth()
+  date.getMonthsInYear()
+  date.getWeeksInMonth()
+  expect(date.toDate().getTime()).toEqual(originalTime)
+})

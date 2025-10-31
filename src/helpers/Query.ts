@@ -62,6 +62,71 @@ export function daysInYear(date: Date): number {
 }
 
 /**
+ * Gets an array of all days in the month for the given date.
+ * @param date - The date to get days for
+ * @returns An array of Date objects, one for each day in the month
+ */
+export function getDaysInMonth(date: Date): Date[] {
+  const firstDay = Helpers.startOfMonth(date)
+  const lastDay = Helpers.endOfMonth(date)
+  const daysCount = lastDay.getDate()
+  const year = firstDay.getFullYear()
+  const month = firstDay.getMonth()
+  const days: Date[] = []
+  for (let day = 1; day <= daysCount; day++) {
+    const dayDate = new Date(year, month, day)
+    days.push(dayDate)
+  }
+  return days
+}
+
+/**
+ * Gets an array of all months in the year for the given date.
+ * @param date - The date to get months for
+ * @returns An array of Date objects, one for the first day of each month
+ */
+export function getMonthsInYear(date: Date): Date[] {
+  const year = date.getFullYear()
+  const months: Date[] = []
+  for (let month = 0; month < 12; month++) {
+    months.push(new Date(year, month, 1))
+  }
+  return months
+}
+
+/**
+ * Gets an array of all weeks in the month for the given date.
+ * Each week is represented by an array of Date objects for the days in that week.
+ * @param date - The date to get weeks for
+ * @returns An array of week arrays, where each week contains Date objects for the days in that week
+ */
+export function getWeeksInMonth(date: Date): Date[][] {
+  const firstDayOfMonth = Helpers.startOfMonth(date)
+  const lastDayOfMonth = Helpers.endOfMonth(date)
+  const firstDayOfWeek = firstDayOfMonth.getDay()
+  const daysInMonth = lastDayOfMonth.getDate()
+  const year = firstDayOfMonth.getFullYear()
+  const month = firstDayOfMonth.getMonth()
+  const weeks: Date[][] = []
+  const totalDays = daysInMonth + firstDayOfWeek
+  const totalWeeks = Math.ceil(totalDays / 7)
+  for (let weekIndex = 0; weekIndex < totalWeeks; weekIndex++) {
+    const currentWeek: Date[] = []
+    for (let dayIndex = 0; dayIndex < 7; dayIndex++) {
+      const dayOfMonth = weekIndex * 7 + dayIndex - firstDayOfWeek + 1
+      if (dayOfMonth >= 1 && dayOfMonth <= daysInMonth) {
+        const dayDate = new Date(year, month, dayOfMonth)
+        currentWeek.push(dayDate)
+      }
+    }
+    if (currentWeek.length > 0) {
+      weeks.push(currentWeek)
+    }
+  }
+  return weeks
+}
+
+/**
  * Gets the last occurrence of a weekday in the month for the given date.
  * @param date - The date to get last weekday for
  * @param weekday - The weekday (0-6, Sunday is 0)

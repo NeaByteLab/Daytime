@@ -701,3 +701,118 @@ Deno.test('Query: weekday methods should maintain immutability', () => {
   date.nearestWeekday()
   expect(date.toDate().getTime()).toEqual(originalTime)
 })
+
+Deno.test('Query: getDaysInMonth - should return all days in month', () => {
+  const date = daytime('2026-01-15')
+  const days = date.getDaysInMonth()
+  expect(days.length).toEqual(31)
+  expect(days[0].format('YYYY-MM-DD')).toEqual('2026-01-01')
+  expect(days[30].format('YYYY-MM-DD')).toEqual('2026-01-31')
+  expect(days.every((day) => day.month() === 1)).toEqual(expectedTrue)
+  expect(days.every((day) => day.year() === 2026)).toEqual(expectedTrue)
+})
+
+Deno.test('Query: getDaysInMonth - should work for February non-leap year', () => {
+  const date = daytime('2026-02-15')
+  const days = date.getDaysInMonth()
+  expect(days.length).toEqual(28)
+  expect(days[0].format('YYYY-MM-DD')).toEqual('2026-02-01')
+  expect(days[27].format('YYYY-MM-DD')).toEqual('2026-02-28')
+})
+
+Deno.test('Query: getDaysInMonth - should work for February leap year', () => {
+  const date = daytime('2028-02-15')
+  const days = date.getDaysInMonth()
+  expect(days.length).toEqual(29)
+  expect(days[0].format('YYYY-MM-DD')).toEqual('2028-02-01')
+  expect(days[28].format('YYYY-MM-DD')).toEqual('2028-02-29')
+})
+
+Deno.test('Query: getDaysInMonth - should work for 30-day months', () => {
+  const date = daytime('2026-04-15')
+  const days = date.getDaysInMonth()
+  expect(days.length).toEqual(30)
+  expect(days[0].format('YYYY-MM-DD')).toEqual('2026-04-01')
+  expect(days[29].format('YYYY-MM-DD')).toEqual('2026-04-30')
+})
+
+Deno.test('Query: getDaysInMonth - should return Daytime instances', () => {
+  const date = daytime('2026-01-15')
+  const days = date.getDaysInMonth()
+  expect(days.length).toBeGreaterThan(0)
+  expect(typeof days[0].format).toEqual('function')
+  expect(typeof days[0].toDate).toEqual('function')
+})
+
+Deno.test('Query: getMonthsInYear - should return all 12 months', () => {
+  const date = daytime('2026-01-15')
+  const months = date.getMonthsInYear()
+  expect(months.length).toEqual(12)
+  expect(months[0].month()).toEqual(1)
+  expect(months[11].month()).toEqual(12)
+  expect(months.every((m) => m.year() === 2026)).toEqual(expectedTrue)
+})
+
+Deno.test('Query: getMonthsInYear - should return first day of each month', () => {
+  const date = daytime('2026-03-15')
+  const months = date.getMonthsInYear()
+  expect(months[0].format('YYYY-MM-DD')).toEqual('2026-01-01')
+  expect(months[1].format('YYYY-MM-DD')).toEqual('2026-02-01')
+  expect(months[2].format('YYYY-MM-DD')).toEqual('2026-03-01')
+  expect(months[11].format('YYYY-MM-DD')).toEqual('2026-12-01')
+})
+
+Deno.test('Query: getMonthsInYear - should return Daytime instances', () => {
+  const date = daytime('2026-01-15')
+  const months = date.getMonthsInYear()
+  expect(months.length).toEqual(12)
+  expect(typeof months[0].format).toEqual('function')
+  expect(typeof months[0].toDate).toEqual('function')
+})
+
+Deno.test('Query: getWeeksInMonth - should return weeks for month', () => {
+  const date = daytime('2026-01-15')
+  const weeks = date.getWeeksInMonth()
+  expect(weeks.length).toBeGreaterThanOrEqual(4)
+  expect(weeks.length).toBeLessThanOrEqual(6)
+})
+
+Deno.test('Query: getWeeksInMonth - should return arrays of Daytime instances', () => {
+  const date = daytime('2026-01-15')
+  const weeks = date.getWeeksInMonth()
+  expect(Array.isArray(weeks)).toEqual(expectedTrue)
+  expect(Array.isArray(weeks[0])).toEqual(expectedTrue)
+  expect(typeof weeks[0][0].format).toEqual('function')
+})
+
+Deno.test('Query: getWeeksInMonth - should include all days in month', () => {
+  const date = daytime('2026-01-15')
+  const weeks = date.getWeeksInMonth()
+  const allDays = weeks.flat()
+  expect(allDays.length).toEqual(31)
+  expect(allDays[0].format('YYYY-MM-DD')).toEqual('2026-01-01')
+  expect(allDays[30].format('YYYY-MM-DD')).toEqual('2026-01-31')
+})
+
+Deno.test('Query: getWeeksInMonth - should work for February', () => {
+  const date = daytime('2026-02-15')
+  const weeks = date.getWeeksInMonth()
+  const allDays = weeks.flat()
+  expect(allDays.length).toEqual(28)
+})
+
+Deno.test('Query: getWeeksInMonth - should work for leap year February', () => {
+  const date = daytime('2028-02-15')
+  const weeks = date.getWeeksInMonth()
+  const allDays = weeks.flat()
+  expect(allDays.length).toEqual(29)
+})
+
+Deno.test('Query: calendar methods should maintain immutability', () => {
+  const date = daytime('2026-01-15')
+  const originalTime = date.toDate().getTime()
+  date.getDaysInMonth()
+  date.getMonthsInYear()
+  date.getWeeksInMonth()
+  expect(date.toDate().getTime()).toEqual(originalTime)
+})
