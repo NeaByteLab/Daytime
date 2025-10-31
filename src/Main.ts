@@ -9,7 +9,7 @@ import { Daytime } from '@app/Daytime.ts'
  * @param localeCode - Optional locale code (defaults to default locale)
  * @returns A new Daytime instance
  */
-export default function daytime(date?: Types.DateInput, localeCode?: Types.LocaleCode): Daytime {
+function daytime(date?: Types.DateInput, localeCode?: Types.LocaleCode): Daytime {
   return new Daytime(date, localeCode)
 }
 
@@ -36,6 +36,12 @@ daytime.getDefaultLocale = (): string => {
 daytime.getAvailableLocales = (): string[] => {
   return Locale.getAvailableLocales()
 }
+
+/**
+ * Exports the daytime function as the default export.
+ * @returns The daytime function
+ */
+export default daytime
 
 /**
  * Re-exports all type definitions for external use.
