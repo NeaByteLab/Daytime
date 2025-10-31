@@ -272,16 +272,6 @@ export function normalizeLocaleCode(code: string): string {
 }
 
 /**
- * Registers a custom locale.
- * @param code - The locale code
- * @param data - The locale data
- */
-export function registerLocale(code: string, data: Types.LocaleData): void {
-  const normalizedCode = normalizeLocaleCode(code)
-  localeRegistry[normalizedCode] = data
-}
-
-/**
  * Sets the default locale code.
  * @param code - The locale code to set as default
  */

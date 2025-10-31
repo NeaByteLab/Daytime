@@ -1,8 +1,6 @@
 import { expect } from '@std/expect'
 import { expectedTrue } from '@tests/shared/index.ts'
-import type * as Types from '@app/Types.ts'
 import * as Locale from '@locale/index.ts'
-import { en } from '@locale/en.ts'
 
 Deno.test('Locale: getAvailableLocales - should return array of locale codes', () => {
   const locales = Locale.getAvailableLocales()
@@ -106,70 +104,6 @@ Deno.test('Locale: normalizeLocaleCode - should handle null-like values', () => 
   expect(Locale.normalizeLocaleCode(undefined as unknown as string)).toEqual('en')
 })
 
-Deno.test('Locale: registerLocale - should register custom locale', () => {
-  const customLocale: Types.LocaleData = {
-    dayNames: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
-    dayNamesShort: ['S', 'M', 'T', 'W', 'T', 'F', 'S'],
-    monthNames: [
-      'Jan',
-      'Feb',
-      'Mar',
-      'Apr',
-      'May',
-      'Jun',
-      'Jul',
-      'Aug',
-      'Sep',
-      'Oct',
-      'Nov',
-      'Dec'
-    ],
-    monthNamesShort: ['J', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D'],
-    relative: {
-      now: 'now',
-      past: '{value} {unit} ago',
-      future: 'in {value} {unit}',
-      units: {
-        singular: {
-          second: 'sec',
-          minute: 'min',
-          hour: 'hr',
-          day: 'day',
-          week: 'wk',
-          month: 'mo',
-          year: 'yr'
-        },
-        plural: {
-          second: 'secs',
-          minute: 'mins',
-          hour: 'hrs',
-          day: 'days',
-          week: 'wks',
-          month: 'mos',
-          year: 'yrs'
-        }
-      }
-    },
-    code: 'test'
-  }
-  Locale.registerLocale('test', customLocale)
-  const registered = Locale.getLocale('test')
-  expect(registered).toBeDefined()
-  expect(registered.code).toEqual('test')
-  expect(registered.dayNames[0]).toEqual('Sun')
-})
-
-Deno.test('Locale: registerLocale - should normalize locale code before registering', () => {
-  const customLocale: Types.LocaleData = {
-    ...en,
-    code: 'custom'
-  }
-  Locale.registerLocale('CUSTOM-LOCALE', customLocale)
-  const registered = Locale.getLocale('custom')
-  expect(registered).toBeDefined()
-  expect(registered.code).toEqual('custom')
-})
-
 Deno.test('Locale: setDefaultLocale - should set default locale to valid code', () => {
   const originalDefault = Locale.getDefaultLocale()
   try {
@@ -211,23 +145,6 @@ Deno.test('Locale: setDefaultLocale - should work with normalized codes', () => 
     expect(beforeNormalize).toEqual('en')
     Locale.setDefaultLocale('xyz')
     expect(Locale.getDefaultLocale()).toEqual('en')
-  } finally {
-    Locale.setDefaultLocale(originalDefault)
-  }
-})
-
-Deno.test('Locale: getLocale - should return registered locale', () => {
-  const originalDefault = Locale.getDefaultLocale()
-  try {
-    const testLocale: Types.LocaleData = {
-      ...en,
-      code: 'test-default'
-    }
-    Locale.registerLocale('test-default', testLocale)
-    Locale.setDefaultLocale('test-default')
-    const locale = Locale.getLocale('test-default')
-    expect(locale).toBeDefined()
-    expect(locale.code).toEqual('test-default')
   } finally {
     Locale.setDefaultLocale(originalDefault)
   }

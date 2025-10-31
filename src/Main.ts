@@ -30,15 +30,6 @@ daytime.getDefaultLocale = (): string => {
 }
 
 /**
- * Registers a custom locale.
- * @param code - The locale code
- * @param data - The locale data
- */
-daytime.registerLocale = (code: string, data: Types.LocaleData): void => {
-  Locale.registerLocale(code, data)
-}
-
-/**
  * Gets all available locale codes.
  * @returns Array of available locale codes
  */
