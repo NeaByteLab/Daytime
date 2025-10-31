@@ -592,3 +592,117 @@ Deno.test('Daytime: all query convenience methods should return booleans', () =>
   expect(typeof daytime(now).isSameYear(future)).toBe('boolean')
   expect(typeof daytime(now).isSameQuarter(future)).toBe('boolean')
 })
+
+Deno.test('Daytime: lastWeekday - should return last weekday of month', () => {
+  const date = daytime('2026-01-15')
+  const lastMonday = date.lastWeekday(1)
+  expect(lastMonday.dayOfWeek()).toEqual(1)
+  expect(lastMonday.month()).toEqual(1)
+  expect(lastMonday.toDate().getTime()).toBeGreaterThanOrEqual(date.toDate().getTime())
+})
+
+Deno.test('Daytime: lastWeekday - should work with chaining', () => {
+  const date = daytime('2026-01-15')
+  const result = date.lastWeekday(5).add(1, 'day')
+  expect(typeof result.toDate()).toEqual('object')
+})
+
+Deno.test('Daytime: nearestWeekday - should move weekends to nearest weekday', () => {
+  const saturday = daytime('2026-01-03')
+  const sunday = daytime('2026-01-04')
+  expect(saturday.nearestWeekday().dayOfWeek()).toBeLessThan(6)
+  expect(sunday.nearestWeekday().dayOfWeek()).toBeGreaterThan(0)
+})
+
+Deno.test('Daytime: nearestWeekday - should keep weekdays unchanged', () => {
+  const monday = daytime('2026-01-05')
+  const tuesday = daytime('2026-01-06')
+  expect(monday.nearestWeekday().dayOfWeek()).toEqual(1)
+  expect(tuesday.nearestWeekday().dayOfWeek()).toEqual(2)
+})
+
+Deno.test('Daytime: nearestWeekday - should work with chaining', () => {
+  const date = daytime('2026-01-03')
+  const nearest = date.nearestWeekday()
+  expect(nearest.dayOfWeek()).toBeLessThan(6)
+  const result = nearest.add(1, 'day')
+  expect(typeof result.toDate()).toEqual('object')
+})
+
+Deno.test('Daytime: nextWeekday - should find next occurrence of weekday', () => {
+  const date = daytime('2026-01-05')
+  const nextMonday = date.nextWeekday(1)
+  expect(nextMonday.dayOfWeek()).toEqual(1)
+  expect(nextMonday.toDate().getTime()).toBeGreaterThan(date.toDate().getTime())
+})
+
+Deno.test('Daytime: nextWeekday - should work for all weekdays', () => {
+  const date = daytime('2026-01-15')
+  for (let weekday = 0; weekday <= 6; weekday++) {
+    const result = date.nextWeekday(weekday)
+    expect(result.dayOfWeek()).toEqual(weekday)
+    expect(result.toDate().getTime()).toBeGreaterThan(date.toDate().getTime())
+  }
+})
+
+Deno.test('Daytime: nextWeekday - should work with chaining', () => {
+  const date = daytime('2026-01-15')
+  const result = date.nextWeekday(1).add(1, 'day')
+  expect(typeof result.toDate()).toEqual('object')
+})
+
+Deno.test('Daytime: nthWeekday - should find nth occurrence in month', () => {
+  const date = daytime('2026-01-15')
+  const firstMonday = date.nthWeekday(1, 1)
+  expect(firstMonday.dayOfWeek()).toEqual(1)
+  expect(firstMonday.month()).toEqual(1)
+  expect(firstMonday.day()).toEqual(5)
+})
+
+Deno.test('Daytime: nthWeekday - should handle different occurrences', () => {
+  const date = daytime('2026-01-15')
+  const secondFriday = date.nthWeekday(2, 5)
+  const thirdWednesday = date.nthWeekday(3, 3)
+  expect(secondFriday.dayOfWeek()).toEqual(5)
+  expect(thirdWednesday.dayOfWeek()).toEqual(3)
+  expect(thirdWednesday.toDate().getTime()).toBeGreaterThan(secondFriday.toDate().getTime())
+})
+
+Deno.test('Daytime: nthWeekday - should work with chaining', () => {
+  const date = daytime('2026-01-15')
+  const result = date.nthWeekday(1, 1).add(1, 'week')
+  expect(typeof result.toDate()).toEqual('object')
+})
+
+Deno.test('Daytime: prevWeekday - should find previous occurrence of weekday', () => {
+  const date = daytime('2026-01-15')
+  const prevMonday = date.prevWeekday(1)
+  expect(prevMonday.dayOfWeek()).toEqual(1)
+  expect(prevMonday.toDate().getTime()).toBeLessThan(date.toDate().getTime())
+})
+
+Deno.test('Daytime: prevWeekday - should work for all weekdays', () => {
+  const date = daytime('2026-01-15')
+  for (let weekday = 0; weekday <= 6; weekday++) {
+    const result = date.prevWeekday(weekday)
+    expect(result.dayOfWeek()).toEqual(weekday)
+    expect(result.toDate().getTime()).toBeLessThan(date.toDate().getTime())
+  }
+})
+
+Deno.test('Daytime: prevWeekday - should work with chaining', () => {
+  const date = daytime('2026-01-15')
+  const result = date.prevWeekday(5).subtract(1, 'day')
+  expect(typeof result.toDate()).toEqual('object')
+})
+
+Deno.test('Daytime: weekday methods should maintain immutability', () => {
+  const date = daytime('2026-01-15')
+  const originalTime = date.toDate().getTime()
+  date.lastWeekday(1)
+  date.nearestWeekday()
+  date.nextWeekday(1)
+  date.nthWeekday(1, 1)
+  date.prevWeekday(5)
+  expect(date.toDate().getTime()).toEqual(originalTime)
+})

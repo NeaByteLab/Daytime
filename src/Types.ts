@@ -134,10 +134,20 @@ export interface IDaytime {
   minute(): number
   /** Gets the month */
   month(): number
+  /** Gets the last occurrence of a weekday in the month */
+  lastWeekday(weekday: number): IDaytime
+  /** Gets the nearest weekday to this date */
+  nearestWeekday(): IDaytime
   /** Gets the next business day */
   nextBusinessDay(): IDaytime
+  /** Gets the next occurrence of a weekday */
+  nextWeekday(weekday: number): IDaytime
+  /** Gets the nth occurrence of a weekday in the month */
+  nthWeekday(n: number, weekday: number): IDaytime
   /** Gets the previous business day */
   prevBusinessDay(): IDaytime
+  /** Gets the previous occurrence of a weekday */
+  prevWeekday(weekday: number): IDaytime
   /** Gets the previous business day */
   previousBusinessDay(): IDaytime
   /** Gets the quarter */

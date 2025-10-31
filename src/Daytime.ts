@@ -470,6 +470,25 @@ export class Daytime implements Types.IDaytime {
   }
 
   /**
+   * Gets the last occurrence of a weekday in the month.
+   * @param weekday - The weekday (0-6, Sunday is 0)
+   * @returns A new Daytime instance representing the last occurrence of the weekday
+   */
+  lastWeekday(weekday: number): Types.IDaytime {
+    const newDate = Helpers.lastWeekday(this.date, weekday)
+    return new Daytime(newDate)
+  }
+
+  /**
+   * Gets the nearest weekday to this date (moves weekends to nearest weekday).
+   * @returns A new Daytime instance representing the nearest weekday
+   */
+  nearestWeekday(): Types.IDaytime {
+    const newDate = Helpers.nearestWeekday(this.date)
+    return new Daytime(newDate)
+  }
+
+  /**
    * Gets the next business day.
    * @returns A new Daytime instance representing the next business day
    */
@@ -479,11 +498,42 @@ export class Daytime implements Types.IDaytime {
   }
 
   /**
+   * Gets the next occurrence of a weekday.
+   * @param weekday - The weekday (0-6, Sunday is 0)
+   * @returns A new Daytime instance representing the next occurrence of the weekday
+   */
+  nextWeekday(weekday: number): Types.IDaytime {
+    const newDate = Helpers.nextWeekday(this.date, weekday)
+    return new Daytime(newDate)
+  }
+
+  /**
+   * Gets the nth occurrence of a weekday in the month.
+   * @param n - The occurrence number (1-based)
+   * @param weekday - The weekday (0-6, Sunday is 0)
+   * @returns A new Daytime instance representing the nth occurrence of the weekday
+   */
+  nthWeekday(n: number, weekday: number): Types.IDaytime {
+    const newDate = Helpers.nthWeekday(this.date, n, weekday)
+    return new Daytime(newDate)
+  }
+
+  /**
    * Gets the previous business day.
    * @returns A new Daytime instance representing the previous business day
    */
   prevBusinessDay(): Types.IDaytime {
     const newDate = Helpers.prevBusinessDay(this.date)
+    return new Daytime(newDate)
+  }
+
+  /**
+   * Gets the previous occurrence of a weekday.
+   * @param weekday - The weekday (0-6, Sunday is 0)
+   * @returns A new Daytime instance representing the previous occurrence of the weekday
+   */
+  prevWeekday(weekday: number): Types.IDaytime {
+    const newDate = Helpers.prevWeekday(this.date, weekday)
     return new Daytime(newDate)
   }
 

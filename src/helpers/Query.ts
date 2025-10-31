@@ -62,6 +62,95 @@ export function daysInYear(date: Date): number {
 }
 
 /**
+ * Gets the last occurrence of a weekday in the month for the given date.
+ * @param date - The date to get last weekday for
+ * @param weekday - The weekday (0-6, Sunday is 0)
+ * @returns A new Date representing the last occurrence of the weekday in the month
+ */
+export function lastWeekday(date: Date, weekday: number): Date {
+  const lastDay = Helpers.endOfMonth(date)
+  const lastDayOfWeek = lastDay.getDay()
+  let daysToSubtract = (lastDayOfWeek - weekday + 7) % 7
+  if (daysToSubtract === 0 && lastDayOfWeek !== weekday) {
+    daysToSubtract = 7
+  }
+  const result = Helpers.cloneDate(lastDay)
+  result.setDate(result.getDate() - daysToSubtract)
+  return result
+}
+
+/**
+ * Gets the nearest weekday to the given date (moves weekends to nearest weekday).
+ * @param date - The date to get nearest weekday for
+ * @returns A new Date representing the nearest weekday
+ */
+export function nearestWeekday(date: Date): Date {
+  const dayOfWeek = date.getDay()
+  const result = Helpers.cloneDate(date)
+  if (dayOfWeek === 0) {
+    result.setDate(result.getDate() + 1)
+  } else if (dayOfWeek === 6) {
+    result.setDate(result.getDate() - 1)
+  }
+  return result
+}
+
+/**
+ * Gets the next occurrence of a weekday from the given date.
+ * @param date - The date to get next weekday for
+ * @param weekday - The weekday (0-6, Sunday is 0)
+ * @returns A new Date representing the next occurrence of the weekday
+ */
+export function nextWeekday(date: Date, weekday: number): Date {
+  const currentDayOfWeek = date.getDay()
+  let daysToAdd = (weekday - currentDayOfWeek + 7) % 7
+  if (daysToAdd === 0) {
+    daysToAdd = 7
+  }
+  const result = Helpers.cloneDate(date)
+  result.setDate(result.getDate() + daysToAdd)
+  return result
+}
+
+/**
+ * Gets the nth occurrence of a weekday in the month for the given date.
+ * @param date - The date to get nth weekday for
+ * @param n - The occurrence number (1-based)
+ * @param weekday - The weekday (0-6, Sunday is 0)
+ * @returns A new Date representing the nth occurrence of the weekday in the month
+ */
+export function nthWeekday(date: Date, n: number, weekday: number): Date {
+  const firstDayOfMonth = Helpers.startOfMonth(date)
+  const lastDayOfMonth = Helpers.endOfMonth(date)
+  const firstDayOfWeek = firstDayOfMonth.getDay()
+  const daysInMonth = lastDayOfMonth.getDate()
+  const daysToFirst = (weekday - firstDayOfWeek + 7) % 7
+  const maxOccurrences = Math.floor((daysInMonth - daysToFirst - 1) / 7) + 1
+  const targetN = Math.min(n, maxOccurrences)
+  const daysToAdd = daysToFirst + (targetN - 1) * 7
+  const result = Helpers.cloneDate(firstDayOfMonth)
+  result.setDate(result.getDate() + daysToAdd)
+  return result
+}
+
+/**
+ * Gets the previous occurrence of a weekday from the given date.
+ * @param date - The date to get previous weekday for
+ * @param weekday - The weekday (0-6, Sunday is 0)
+ * @returns A new Date representing the previous occurrence of the weekday
+ */
+export function prevWeekday(date: Date, weekday: number): Date {
+  const currentDayOfWeek = date.getDay()
+  let daysToSubtract = (currentDayOfWeek - weekday + 7) % 7
+  if (daysToSubtract === 0) {
+    daysToSubtract = 7
+  }
+  const result = Helpers.cloneDate(date)
+  result.setDate(result.getDate() - daysToSubtract)
+  return result
+}
+
+/**
  * Gets the week number within the month for the given date.
  * @param date - The date to get week of month for
  * @returns The week number within the month

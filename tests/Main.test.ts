@@ -134,7 +134,7 @@ Deno.test('Utility: valueOf - should support sorting', () => {
     new Date('2026-01-15T12:00:00Z'),
     new Date('2026-01-16T12:00:00Z')
   ]
-  const sorted = dates.map(d => daytime(d)).sort((a, b) => a.valueOf() - b.valueOf())
+  const sorted = dates.map((d) => daytime(d)).sort((a, b) => a.valueOf() - b.valueOf())
   expect(sorted[0]?.valueOf()).toEqual(dates[1]?.getTime())
   expect(sorted[1]?.valueOf()).toEqual(dates[2]?.getTime())
   expect(sorted[2]?.valueOf()).toEqual(dates[0]?.getTime())
