@@ -160,3 +160,149 @@ Deno.test('Validation: isValid should handle parsed dates', () => {
   const valid = daytime('2026-01-15T12:30:45Z')
   expect(valid.isValid()).toBe(expectedTrue)
 })
+
+Deno.test('Validation: businessDaysInMonth - should return correct count for month', () => {
+  const janDate = daytime('2026-01-15')
+  const count = janDate.businessDaysInMonth()
+  expect(count).toBeGreaterThan(0)
+  expect(count).toBeLessThanOrEqual(31)
+})
+
+Deno.test('Validation: businessDaysInMonth - should exclude weekends', () => {
+  const febDate = daytime('2026-02-15')
+  const count = febDate.businessDaysInMonth()
+  const totalDays = febDate.daysInMonth()
+  expect(count).toBeLessThan(totalDays)
+})
+
+Deno.test('Validation: businessDaysInMonth - should work for different months', () => {
+  const months = [
+    daytime('2026-01-15'),
+    daytime('2026-02-15'),
+    daytime('2026-03-15'),
+    daytime('2026-04-15'),
+    daytime('2026-05-15'),
+    daytime('2026-06-15')
+  ]
+  for (const date of months) {
+    const count = date.businessDaysInMonth()
+    expect(count).toBeGreaterThan(0)
+    expect(count).toBeLessThanOrEqual(31)
+  }
+})
+
+Deno.test('Validation: businessDaysInYear - should return correct count for year', () => {
+  const yearDate = daytime('2026-01-15')
+  const count = yearDate.businessDaysInYear()
+  expect(count).toBeGreaterThan(0)
+  expect(count).toBeLessThanOrEqual(366)
+})
+
+Deno.test('Validation: businessDaysInYear - should exclude weekends', () => {
+  const yearDate = daytime('2026-01-15')
+  const count = yearDate.businessDaysInYear()
+  const totalDays = yearDate.daysInYear()
+  expect(count).toBeLessThan(totalDays)
+})
+
+Deno.test('Validation: businessDaysInYear - should work for leap and non-leap years', () => {
+  const leapYear = daytime('2028-01-15')
+  const nonLeapYear = daytime('2027-01-15')
+  const leapCount = leapYear.businessDaysInYear()
+  const nonLeapCount = nonLeapYear.businessDaysInYear()
+  expect(leapCount).toBeGreaterThan(0)
+  expect(nonLeapCount).toBeGreaterThan(0)
+  expect(Math.abs(leapCount - nonLeapCount)).toBeLessThanOrEqual(2)
+})
+
+Deno.test('Validation: nextBusinessDay - should return next business day', () => {
+  const monday = daytime('2026-01-12')
+  const next = monday.nextBusinessDay()
+  expect(next.isBusinessDay()).toBe(expectedTrue)
+  expect(next.toDate().getTime()).toBeGreaterThan(monday.toDate().getTime())
+})
+
+Deno.test('Validation: nextBusinessDay - should skip weekends', () => {
+  const friday = daytime('2026-01-16')
+  const next = friday.nextBusinessDay()
+  expect(next.dayOfWeek()).toBeGreaterThanOrEqual(1)
+  expect(next.dayOfWeek()).toBeLessThanOrEqual(5)
+  expect(next.toDate().getTime()).toBeGreaterThan(friday.toDate().getTime())
+})
+
+Deno.test('Validation: nextBusinessDay - should return Monday after Friday', () => {
+  const friday = daytime('2026-01-16')
+  const next = friday.nextBusinessDay()
+  const dayOfWeek = next.dayOfWeek()
+  expect(dayOfWeek).toBeGreaterThanOrEqual(1)
+  expect(dayOfWeek).toBeLessThanOrEqual(5)
+})
+
+Deno.test('Validation: nextBusinessDay - should work from weekend', () => {
+  const saturday = daytime('2026-01-10')
+  const next = saturday.nextBusinessDay()
+  expect(next.isBusinessDay()).toBe(expectedTrue)
+  expect(next.dayOfWeek()).toBe(1)
+})
+
+Deno.test('Validation: nextBusinessDay - should return new instance', () => {
+  const date = daytime('2026-01-15')
+  const next = date.nextBusinessDay()
+  expect(next.toDate()).not.toBe(date.toDate())
+})
+
+Deno.test('Validation: prevBusinessDay - should return previous business day', () => {
+  const wednesday = daytime('2026-01-14')
+  const prev = wednesday.prevBusinessDay()
+  expect(prev.isBusinessDay()).toBe(expectedTrue)
+  expect(prev.toDate().getTime()).toBeLessThan(wednesday.toDate().getTime())
+})
+
+Deno.test('Validation: prevBusinessDay - should skip weekends', () => {
+  const monday = daytime('2026-01-12')
+  const prev = monday.prevBusinessDay()
+  expect(prev.dayOfWeek()).toBeGreaterThanOrEqual(1)
+  expect(prev.dayOfWeek()).toBeLessThanOrEqual(5)
+  expect(prev.toDate().getTime()).toBeLessThan(monday.toDate().getTime())
+})
+
+Deno.test('Validation: prevBusinessDay - should return Friday before Monday', () => {
+  const monday = daytime('2026-01-12')
+  const prev = monday.prevBusinessDay()
+  expect(prev.dayOfWeek()).toBe(5)
+})
+
+Deno.test('Validation: prevBusinessDay - should work from weekend', () => {
+  const saturday = daytime('2026-01-10')
+  const prev = saturday.prevBusinessDay()
+  expect(prev.isBusinessDay()).toBe(expectedTrue)
+  expect(prev.dayOfWeek()).toBe(5)
+})
+
+Deno.test('Validation: prevBusinessDay - should return new instance', () => {
+  const date = daytime('2026-01-15')
+  const prev = date.prevBusinessDay()
+  expect(prev.toDate()).not.toBe(date.toDate())
+})
+
+Deno.test('Validation: previousBusinessDay - should be alias for prevBusinessDay', () => {
+  const date = daytime('2026-01-15')
+  const prev1 = date.prevBusinessDay()
+  const prev2 = date.previousBusinessDay()
+  expect(prev1.toDate().getTime()).toBe(prev2.toDate().getTime())
+})
+
+Deno.test('Validation: business day methods should work with chaining', () => {
+  const date = daytime('2026-01-15')
+  const result = date.nextBusinessDay().isBusinessDay()
+  expect(typeof result).toEqual('boolean')
+  expect(result).toBe(expectedTrue)
+})
+
+Deno.test('Validation: business day methods should be immutable', () => {
+  const date = daytime('2026-01-15')
+  const originalTime = date.toDate().getTime()
+  date.nextBusinessDay()
+  date.prevBusinessDay()
+  expect(date.toDate().getTime()).toBe(originalTime)
+})

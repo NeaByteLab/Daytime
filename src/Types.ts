@@ -12,24 +12,24 @@ export type Inclusivity = '[]' | '()' | '[)' | '(]'
  * Options object for setting multiple date components.
  */
 export interface SetOptions {
-  /** Year value */
-  year?: number
-  /** Month value (1-12) */
-  month?: number
-  /** Quarter value (1-4) */
-  quarter?: number
-  /** Week value */
-  week?: number
   /** Day of month value */
   day?: number
   /** Hour value (0-23) */
   hour?: number
-  /** Minute value (0-59) */
-  minute?: number
-  /** Second value (0-59) */
-  second?: number
   /** Millisecond value (0-999) */
   millisecond?: number
+  /** Minute value (0-59) */
+  minute?: number
+  /** Month value (1-12) */
+  month?: number
+  /** Quarter value (1-4) */
+  quarter?: number
+  /** Second value (0-59) */
+  second?: number
+  /** Week value */
+  week?: number
+  /** Year value */
+  year?: number
 }
 
 /**
@@ -38,8 +38,14 @@ export interface SetOptions {
 export interface IDaytime {
   /** Adds a time value to the date */
   add(value: number, unit: TimeUnit): IDaytime
+  /** Gets the number of business days in the month */
+  businessDaysInMonth(): number
+  /** Gets the number of business days in the year */
+  businessDaysInYear(): number
   /** Clones the date */
   clone(): IDaytime
+  /** Gets the day of month */
+  day(): number
   /** Gets the day of week */
   dayOfWeek(): number
   /** Gets the day of year */
@@ -58,6 +64,8 @@ export interface IDaytime {
   fromNow(): string
   /** Gets the date component */
   get(unit: TimeUnit): number
+  /** Gets the hour */
+  hour(): number
   /** Checks if the date is after another date */
   isAfter(other: DateInput, unit?: TimeUnit): boolean
   /** Checks if the date is before another date */
@@ -92,6 +100,22 @@ export interface IDaytime {
   isoWeeksInYear(): number
   /** Gets the local date */
   local(): IDaytime
+  /** Gets the millisecond */
+  millisecond(): number
+  /** Gets the minute */
+  minute(): number
+  /** Gets the month */
+  month(): number
+  /** Gets the next business day */
+  nextBusinessDay(): IDaytime
+  /** Gets the previous business day */
+  prevBusinessDay(): IDaytime
+  /** Gets the previous business day */
+  previousBusinessDay(): IDaytime
+  /** Gets the quarter */
+  quarter(): number
+  /** Gets the second */
+  second(): number
   /** Sets the date component */
   set(options: SetOptions): IDaytime
   /** Sets the date component */
@@ -134,12 +158,16 @@ export interface IDaytime {
   utcOffset(): number
   /** Gets the value of the date */
   valueOf(): number
+  /** Gets the week number */
+  week(): number
   /** Gets the week of the month */
   weekOfMonth(): number
   /** Gets the number of weeks in the month */
   weeksInMonth(): number
   /** Gets the number of weeks in the year */
   weeksInYear(): number
+  /** Gets the year */
+  year(): number
 }
 
 /**

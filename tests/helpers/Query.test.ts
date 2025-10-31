@@ -223,16 +223,19 @@ Deno.test('Query: calculateWeekNumber - should handle edge cases with different 
   expect(week).toBeLessThanOrEqual(2)
 })
 
-Deno.test('Query: weeksInYear - should return correct value when year starts on different days', () => {
-  const yearStartingWednesday = new Date(2025, 0, 1)
-  const yearStartingThursday = new Date(2026, 0, 1)
-  const weeks2025 = daytime(yearStartingWednesday).weeksInYear()
-  const weeks2026 = daytime(yearStartingThursday).weeksInYear()
-  expect(weeks2025).toBeGreaterThanOrEqual(52)
-  expect(weeks2025).toBeLessThanOrEqual(53)
-  expect(weeks2026).toBeGreaterThanOrEqual(52)
-  expect(weeks2026).toBeLessThanOrEqual(53)
-})
+Deno.test(
+  'Query: weeksInYear - should return correct value when year starts on different days',
+  () => {
+    const yearStartingWednesday = new Date(2025, 0, 1)
+    const yearStartingThursday = new Date(2026, 0, 1)
+    const weeks2025 = daytime(yearStartingWednesday).weeksInYear()
+    const weeks2026 = daytime(yearStartingThursday).weeksInYear()
+    expect(weeks2025).toBeGreaterThanOrEqual(52)
+    expect(weeks2025).toBeLessThanOrEqual(53)
+    expect(weeks2026).toBeGreaterThanOrEqual(52)
+    expect(weeks2026).toBeLessThanOrEqual(53)
+  }
+)
 
 Deno.test('Query: calculateWeekNumber - should always return at least 1', () => {
   const jan1 = new Date(2026, 0, 1)
@@ -260,8 +263,237 @@ Deno.test('Query: calculateWeekNumber - should handle edge case when year starts
   expect(week).toBeGreaterThanOrEqual(1)
 })
 
-Deno.test('Query: calculateWeekNumber - should handle edge case when year starts on Saturday', () => {
-  const saturdayJan1 = new Date(2026, 0, 1)
-  const week = daytime(saturdayJan1).get('week')
-  expect(week).toBeGreaterThanOrEqual(1)
+Deno.test(
+  'Query: calculateWeekNumber - should handle edge case when year starts on Saturday',
+  () => {
+    const saturdayJan1 = new Date(2026, 0, 1)
+    const week = daytime(saturdayJan1).get('week')
+    expect(week).toBeGreaterThanOrEqual(1)
+  }
+)
+
+Deno.test('Query: dayOfYear - should return 1 for January 1st', () => {
+  const jan1st2025 = new Date(2025, 0, 1)
+  const jan1st2026 = new Date(2026, 0, 1)
+  const jan1st2028 = new Date(2028, 0, 1)
+  expect(daytime(jan1st2025).dayOfYear()).toEqual(1)
+  expect(daytime(jan1st2026).dayOfYear()).toEqual(1)
+  expect(daytime(jan1st2028).dayOfYear()).toEqual(1)
+})
+
+Deno.test('Query: dayOfYear - should handle month boundaries correctly', () => {
+  const jan31 = new Date(2026, 0, 31)
+  const feb1 = new Date(2026, 1, 1)
+  const feb28 = new Date(2026, 1, 28)
+  const mar1 = new Date(2026, 2, 1)
+  expect(daytime(jan31).dayOfYear()).toEqual(31)
+  expect(daytime(feb1).dayOfYear()).toEqual(32)
+  expect(daytime(feb28).dayOfYear()).toEqual(59)
+  expect(daytime(mar1).dayOfYear()).toEqual(60)
+})
+
+Deno.test('Query: dayOfYear - should handle leap year February correctly', () => {
+  const feb28Leap = new Date(2028, 1, 28)
+  const feb29Leap = new Date(2028, 1, 29)
+  const mar1Leap = new Date(2028, 2, 1)
+  expect(daytime(feb28Leap).dayOfYear()).toEqual(59)
+  expect(daytime(feb29Leap).dayOfYear()).toEqual(60)
+  expect(daytime(mar1Leap).dayOfYear()).toEqual(61)
+})
+
+Deno.test('Query: dayOfYear - should handle year-end correctly', () => {
+  const dec30 = new Date(2025, 11, 30)
+  const dec31NonLeap = new Date(2025, 11, 31)
+  const dec31Leap = new Date(2028, 11, 31)
+  expect(daytime(dec30).dayOfYear()).toEqual(364)
+  expect(daytime(dec31NonLeap).dayOfYear()).toEqual(365)
+  expect(daytime(dec31Leap).dayOfYear()).toEqual(366)
+})
+
+Deno.test('Query: dayOfYear - should work consistently across all months', () => {
+  const months2026 = [
+    { month: 0, day: 1, expected: 1 },
+    { month: 1, day: 1, expected: 32 },
+    { month: 2, day: 1, expected: 60 },
+    { month: 3, day: 1, expected: 91 },
+    { month: 4, day: 1, expected: 121 },
+    { month: 5, day: 1, expected: 152 },
+    { month: 6, day: 1, expected: 182 },
+    { month: 7, day: 1, expected: 213 },
+    { month: 8, day: 1, expected: 244 },
+    { month: 9, day: 1, expected: 274 },
+    { month: 10, day: 1, expected: 305 },
+    { month: 11, day: 1, expected: 335 }
+  ]
+  for (const { month, day, expected } of months2026) {
+    expect(daytime(new Date(2026, month, day)).dayOfYear()).toEqual(expected)
+  }
+})
+
+Deno.test('Query: daysInMonth - should handle all months correctly', () => {
+  const months2026 = [
+    { month: 0, expected: 31 },
+    { month: 1, expected: 28 },
+    { month: 2, expected: 31 },
+    { month: 3, expected: 30 },
+    { month: 4, expected: 31 },
+    { month: 5, expected: 30 },
+    { month: 6, expected: 31 },
+    { month: 7, expected: 31 },
+    { month: 8, expected: 30 },
+    { month: 9, expected: 31 },
+    { month: 10, expected: 30 },
+    { month: 11, expected: 31 }
+  ]
+  for (const { month, expected } of months2026) {
+    expect(daytime(new Date(2026, month, 15)).daysInMonth()).toEqual(expected)
+  }
+})
+
+Deno.test('Query: daysInYear - should correctly identify century leap years', () => {
+  expect(daytime(new Date(2000, 5, 15)).daysInYear()).toEqual(366)
+  expect(daytime(new Date(2400, 5, 15)).daysInYear()).toEqual(366)
+})
+
+Deno.test('Query: weekOfMonth - should handle months starting on different weekdays', () => {
+  const months = [
+    new Date(2026, 0, 1),
+    new Date(2026, 1, 1),
+    new Date(2026, 2, 1),
+    new Date(2026, 3, 1),
+    new Date(2026, 4, 1)
+  ]
+  for (const date of months) {
+    const week = daytime(date).weekOfMonth()
+    expect(week).toBeGreaterThanOrEqual(1)
+    expect(week).toBeLessThanOrEqual(5)
+  }
+})
+
+Deno.test('Query: weekOfMonth - should correctly calculate for middle of month', () => {
+  const midJan = new Date(2026, 0, 15)
+  const midFeb = new Date(2026, 1, 14)
+  const midMar = new Date(2026, 2, 15)
+  expect(daytime(midJan).weekOfMonth()).toBeGreaterThanOrEqual(2)
+  expect(daytime(midFeb).weekOfMonth()).toBeGreaterThanOrEqual(2)
+  expect(daytime(midMar).weekOfMonth()).toBeGreaterThanOrEqual(2)
+})
+
+Deno.test('Query: weekOfMonth - should handle end of month correctly', () => {
+  const lastDays = [
+    new Date(2026, 0, 31),
+    new Date(2026, 1, 28),
+    new Date(2028, 1, 29),
+    new Date(2026, 3, 30)
+  ]
+  for (const date of lastDays) {
+    const week = daytime(date).weekOfMonth()
+    expect(week).toBeGreaterThanOrEqual(4)
+    expect(week).toBeLessThanOrEqual(6)
+  }
+})
+
+Deno.test('Query: weeksInMonth - should handle February correctly', () => {
+  const feb2026 = new Date(2026, 1, 15)
+  const feb2028 = new Date(2028, 1, 15)
+  expect(daytime(feb2026).weeksInMonth()).toBeGreaterThanOrEqual(4)
+  expect(daytime(feb2028).weeksInMonth()).toBeGreaterThanOrEqual(4)
+})
+
+Deno.test('Query: weeksInMonth - should handle months with 31 days', () => {
+  const longMonths = [
+    new Date(2026, 0, 15),
+    new Date(2026, 2, 15),
+    new Date(2026, 4, 15),
+    new Date(2026, 6, 15),
+    new Date(2026, 7, 15),
+    new Date(2026, 9, 15),
+    new Date(2026, 11, 15)
+  ]
+  for (const date of longMonths) {
+    const weeks = daytime(date).weeksInMonth()
+    expect(weeks).toBeGreaterThanOrEqual(4)
+    expect(weeks).toBeLessThanOrEqual(6)
+  }
+})
+
+Deno.test('Query: weeksInMonth - should handle months with 30 days', () => {
+  const shortMonths = [
+    new Date(2026, 3, 15),
+    new Date(2026, 5, 15),
+    new Date(2026, 8, 15),
+    new Date(2026, 10, 15)
+  ]
+  for (const date of shortMonths) {
+    const weeks = daytime(date).weeksInMonth()
+    expect(weeks).toBeGreaterThanOrEqual(4)
+    expect(weeks).toBeLessThanOrEqual(6)
+  }
+})
+
+Deno.test('Query: weeksInYear - should return 53 for years that need it', () => {
+  const yearsWith53Weeks = [new Date(2025, 5, 15), new Date(2032, 5, 15)]
+  for (const date of yearsWith53Weeks) {
+    const weeks = daytime(date).weeksInYear()
+    expect(weeks).toBeGreaterThanOrEqual(52)
+    expect(weeks).toBeLessThanOrEqual(53)
+  }
+})
+
+Deno.test('Query: weeksInYear - should be consistent for same year', () => {
+  const dates2026 = [new Date(2026, 0, 1), new Date(2026, 5, 15), new Date(2026, 11, 31)]
+  const weeks = daytime(dates2026[0]).weeksInYear()
+  for (const date of dates2026) {
+    expect(daytime(date).weeksInYear()).toEqual(weeks)
+  }
+})
+
+Deno.test('Query: calculateWeekNumber - should handle all months of year', () => {
+  for (let month = 0; month < 12; month++) {
+    const date = new Date(2026, month, 15)
+    const week = daytime(date).get('week')
+    expect(week).toBeGreaterThanOrEqual(1)
+    expect(week).toBeLessThanOrEqual(53)
+  }
+})
+
+Deno.test('Query: calculateWeekNumber - should increase throughout year', () => {
+  const jan1 = new Date(2026, 0, 1)
+  const jun15 = new Date(2026, 5, 15)
+  const dec31 = new Date(2026, 11, 31)
+  const weekJan = daytime(jan1).get('week')
+  const weekJun = daytime(jun15).get('week')
+  const weekDec = daytime(dec31).get('week')
+  expect(weekJun).toBeGreaterThanOrEqual(weekJan)
+  expect(weekDec).toBeGreaterThanOrEqual(weekJun)
+})
+
+Deno.test('Query: dayOfWeek - should handle all weekdays correctly', () => {
+  const testDates = [
+    { date: new Date(2026, 0, 4), expected: 0 },
+    { date: new Date(2026, 0, 5), expected: 1 },
+    { date: new Date(2026, 0, 6), expected: 2 },
+    { date: new Date(2026, 0, 7), expected: 3 },
+    { date: new Date(2026, 0, 8), expected: 4 },
+    { date: new Date(2026, 0, 9), expected: 5 },
+    { date: new Date(2026, 0, 10), expected: 6 }
+  ]
+  for (const { date, expected } of testDates) {
+    expect(daytime(date).dayOfWeek()).toEqual(expected)
+  }
+})
+
+Deno.test('Query: all methods should work together', () => {
+  const date = daytime('2026-06-15')
+  expect(date.dayOfWeek()).toBeGreaterThanOrEqual(0)
+  expect(date.dayOfWeek()).toBeLessThanOrEqual(6)
+  expect(date.dayOfYear()).toBeGreaterThanOrEqual(1)
+  expect(date.dayOfYear()).toBeLessThanOrEqual(366)
+  expect(date.daysInMonth()).toBeGreaterThanOrEqual(28)
+  expect(date.daysInMonth()).toBeLessThanOrEqual(31)
+  expect(date.daysInYear()).toBeGreaterThanOrEqual(365)
+  expect(date.daysInYear()).toBeLessThanOrEqual(366)
+  expect(date.weekOfMonth()).toBeGreaterThanOrEqual(1)
+  expect(date.weeksInMonth()).toBeGreaterThanOrEqual(4)
+  expect(date.weeksInYear()).toBeGreaterThanOrEqual(52)
 })

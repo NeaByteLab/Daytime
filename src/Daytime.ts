@@ -30,11 +30,68 @@ export class Daytime implements Types.IDaytime {
   }
 
   /**
+   * Gets the number of business days in the month.
+   * @returns The number of business days in the month
+   */
+  businessDaysInMonth(): number {
+    return Helpers.businessDaysInMonth(this.date)
+  }
+
+  /**
+   * Gets the number of business days in the year.
+   * @returns The number of business days in the year
+   */
+  businessDaysInYear(): number {
+    return Helpers.businessDaysInYear(this.date)
+  }
+
+  /**
    * Creates a clone of the current Daytime instance.
    * @returns A new Daytime instance with the same date
    */
   clone(): Types.IDaytime {
     return new Daytime(Helpers.cloneDate(this.date))
+  }
+
+  /**
+   * Gets the day of month (1-31).
+   * @returns The day of month
+   */
+  day(): number {
+    return this.get('day')
+  }
+
+  /**
+   * Gets the day of week (0-6, Sunday is 0).
+   * @returns The day of week (0-6)
+   */
+  dayOfWeek(): number {
+    return Helpers.dayOfWeek(this.date)
+  }
+
+  /**
+   * Gets the day of year (1-366).
+   * @returns The day of year (1-366)
+   * @throws {Error} When millisecond constant for day is invalid
+   */
+  dayOfYear(): number {
+    return Helpers.dayOfYear(this.date)
+  }
+
+  /**
+   * Gets the number of days in the month.
+   * @returns The number of days in the month (28-31)
+   */
+  daysInMonth(): number {
+    return Helpers.daysInMonth(this.date)
+  }
+
+  /**
+   * Gets the number of days in the year.
+   * @returns The number of days in the year (365 or 366)
+   */
+  daysInYear(): number {
+    return Helpers.daysInYear(this.date)
   }
 
   /**
@@ -85,6 +142,14 @@ export class Daytime implements Types.IDaytime {
    */
   get(unit: Types.TimeUnit): number {
     return Utils.getDateComponent(this.date, unit)
+  }
+
+  /**
+   * Gets the hour (0-23).
+   * @returns The hour
+   */
+  hour(): number {
+    return this.get('hour')
   }
 
   /**
@@ -194,11 +259,128 @@ export class Daytime implements Types.IDaytime {
   }
 
   /**
+   * Checks if the date is in UTC timezone.
+   * @returns True if the date is in UTC, false otherwise
+   */
+  isUTC(): boolean {
+    return Helpers.isUTC(this.date)
+  }
+
+  /**
    * Checks if the date is a weekend (Saturday or Sunday).
    * @returns True if the date is a weekend, false otherwise
    */
   isWeekend(): boolean {
     return Helpers.isWeekend(this.date)
+  }
+
+  /**
+   * Gets the ISO week number (1-53).
+   * @returns The ISO week number (1-53)
+   * @throws {Error} When millisecond constant for week is invalid
+   */
+  isoWeek(): number {
+    return Helpers.isoWeek(this.date)
+  }
+
+  /**
+   * Gets the ISO weekday number (1-7, Monday is 1).
+   * @returns The ISO weekday number (1-7)
+   */
+  isoWeekday(): number {
+    return Helpers.isoWeekday(this.date)
+  }
+
+  /**
+   * Gets the ISO week year.
+   * @returns The ISO week year
+   */
+  isoWeekYear(): number {
+    return Helpers.isoWeekYear(this.date)
+  }
+
+  /**
+   * Gets the number of ISO weeks in the year.
+   * @returns The number of ISO weeks in the year (52 or 53)
+   * @throws {Error} When millisecond constant for week is invalid
+   */
+  isoWeeksInYear(): number {
+    return Helpers.isoWeeksInYear(this.date.getFullYear())
+  }
+
+  /**
+   * Converts the date to local timezone.
+   * @returns A new Daytime instance in local timezone
+   */
+  local(): Types.IDaytime {
+    const localDate = Helpers.cloneDate(this.date)
+    return new Daytime(localDate)
+  }
+
+  /**
+   * Gets the millisecond (0-999).
+   * @returns The millisecond
+   */
+  millisecond(): number {
+    return this.get('millisecond')
+  }
+
+  /**
+   * Gets the minute (0-59).
+   * @returns The minute
+   */
+  minute(): number {
+    return this.get('minute')
+  }
+
+  /**
+   * Gets the month (1-12).
+   * @returns The month
+   */
+  month(): number {
+    return this.get('month')
+  }
+
+  /**
+   * Gets the next business day.
+   * @returns A new Daytime instance representing the next business day
+   */
+  nextBusinessDay(): Types.IDaytime {
+    const newDate = Helpers.nextBusinessDay(this.date)
+    return new Daytime(newDate)
+  }
+
+  /**
+   * Gets the previous business day.
+   * @returns A new Daytime instance representing the previous business day
+   */
+  prevBusinessDay(): Types.IDaytime {
+    const newDate = Helpers.prevBusinessDay(this.date)
+    return new Daytime(newDate)
+  }
+
+  /**
+   * Gets the previous business day.
+   * @returns A new Daytime instance representing the previous business day
+   */
+  previousBusinessDay(): Types.IDaytime {
+    return this.prevBusinessDay()
+  }
+
+  /**
+   * Gets the quarter (1-4).
+   * @returns The quarter
+   */
+  quarter(): number {
+    return this.get('quarter')
+  }
+
+  /**
+   * Gets the second (0-59).
+   * @returns The second
+   */
+  second(): number {
+    return this.get('second')
   }
 
   /**
@@ -248,6 +430,22 @@ export class Daytime implements Types.IDaytime {
   subtract(value: number, unit: Types.TimeUnit): Types.IDaytime {
     const newDate = Utils.subtractTime(this.date, value, unit)
     return new Daytime(newDate)
+  }
+
+  /**
+   * Gets the current system timezone.
+   * @returns The IANA timezone identifier, or 'UTC' if unable to determine
+   */
+  timezone(): string {
+    return Helpers.getTimezone()
+  }
+
+  /**
+   * Gets the timezone offset in minutes for the date.
+   * @returns The timezone offset in minutes
+   */
+  timezoneOffset(): number {
+    return Helpers.getTimezoneOffset(this.date)
   }
 
   /**
@@ -316,6 +514,16 @@ export class Daytime implements Types.IDaytime {
   }
 
   /**
+   * Converts the date to the specified timezone.
+   * @param tz - The target timezone (IANA timezone identifier)
+   * @returns A new Daytime instance in the specified timezone
+   */
+  toTimezone(tz: string): Types.IDaytime {
+    const newDate = Helpers.convertToTimezone(this.date, tz)
+    return new Daytime(newDate)
+  }
+
+  /**
    * Converts the date to a Unix timestamp (seconds since epoch).
    * @returns Unix timestamp in seconds
    */
@@ -342,54 +550,11 @@ export class Daytime implements Types.IDaytime {
   }
 
   /**
-   * Converts the date to the specified timezone.
-   * @param tz - The target timezone (IANA timezone identifier)
-   * @returns A new Daytime instance in the specified timezone
-   */
-  toTimezone(tz: string): Types.IDaytime {
-    const newDate = Helpers.convertToTimezone(this.date, tz)
-    return new Daytime(newDate)
-  }
-
-  /**
-   * Gets the current system timezone.
-   * @returns The IANA timezone identifier, or 'UTC' if unable to determine
-   */
-  timezone(): string {
-    return Helpers.getTimezone()
-  }
-
-  /**
-   * Gets the timezone offset in minutes for the date.
-   * @returns The timezone offset in minutes
-   */
-  timezoneOffset(): number {
-    return Helpers.getTimezoneOffset(this.date)
-  }
-
-  /**
-   * Checks if the date is in UTC timezone.
-   * @returns True if the date is in UTC, false otherwise
-   */
-  isUTC(): boolean {
-    return Helpers.isUTC(this.date)
-  }
-
-  /**
    * Gets the UTC offset in minutes for the date.
    * @returns The UTC offset in minutes
    */
   utcOffset(): number {
     return Helpers.getTimezoneOffset(this.date)
-  }
-
-  /**
-   * Converts the date to local timezone.
-   * @returns A new Daytime instance in local timezone
-   */
-  local(): Types.IDaytime {
-    const localDate = Helpers.cloneDate(this.date)
-    return new Daytime(localDate)
   }
 
   /**
@@ -401,36 +566,11 @@ export class Daytime implements Types.IDaytime {
   }
 
   /**
-   * Gets the day of week (0-6, Sunday is 0).
-   * @returns The day of week (0-6)
+   * Gets the week number.
+   * @returns The week number
    */
-  dayOfWeek(): number {
-    return Helpers.dayOfWeek(this.date)
-  }
-
-  /**
-   * Gets the day of year (1-366).
-   * @returns The day of year (1-366)
-   * @throws {Error} When millisecond constant for day is invalid
-   */
-  dayOfYear(): number {
-    return Helpers.dayOfYear(this.date)
-  }
-
-  /**
-   * Gets the number of days in the month.
-   * @returns The number of days in the month (28-31)
-   */
-  daysInMonth(): number {
-    return Helpers.daysInMonth(this.date)
-  }
-
-  /**
-   * Gets the number of days in the year.
-   * @returns The number of days in the year (365 or 366)
-   */
-  daysInYear(): number {
-    return Helpers.daysInYear(this.date)
+  week(): number {
+    return this.get('week')
   }
 
   /**
@@ -458,36 +598,10 @@ export class Daytime implements Types.IDaytime {
   }
 
   /**
-   * Gets the ISO week number (1-53).
-   * @returns The ISO week number (1-53)
-   * @throws {Error} When millisecond constant for week is invalid
+   * Gets the year.
+   * @returns The year
    */
-  isoWeek(): number {
-    return Helpers.isoWeek(this.date)
-  }
-
-  /**
-   * Gets the ISO week year.
-   * @returns The ISO week year
-   */
-  isoWeekYear(): number {
-    return Helpers.isoWeekYear(this.date)
-  }
-
-  /**
-   * Gets the ISO weekday number (1-7, Monday is 1).
-   * @returns The ISO weekday number (1-7)
-   */
-  isoWeekday(): number {
-    return Helpers.isoWeekday(this.date)
-  }
-
-  /**
-   * Gets the number of ISO weeks in the year.
-   * @returns The number of ISO weeks in the year (52 or 53)
-   * @throws {Error} When millisecond constant for week is invalid
-   */
-  isoWeeksInYear(): number {
-    return Helpers.isoWeeksInYear(this.date.getFullYear())
+  year(): number {
+    return this.get('year')
   }
 }
