@@ -20,6 +20,58 @@ Deno.test('Format: should format day patterns', () => {
   const date = new Date('2026-01-05T12:30:45Z')
   expect(daytime(date).format('DD')).toEqual('05')
   expect(daytime(date).format('D')).toEqual('5')
+  expect(daytime(date).format('Do')).toEqual('5th')
+})
+
+Deno.test('Format: should format ordinal day patterns', () => {
+  const date1 = new Date('2026-01-01T12:30:45Z')
+  const date2 = new Date('2026-01-02T12:30:45Z')
+  const date3 = new Date('2026-01-03T12:30:45Z')
+  const date4 = new Date('2026-01-04T12:30:45Z')
+  const date11 = new Date('2026-01-11T12:30:45Z')
+  const date12 = new Date('2026-01-12T12:30:45Z')
+  const date13 = new Date('2026-01-13T12:30:45Z')
+  const date21 = new Date('2026-01-21T12:30:45Z')
+  const date22 = new Date('2026-01-22T12:30:45Z')
+  const date23 = new Date('2026-01-23T12:30:45Z')
+  expect(daytime(date1).format('Do')).toEqual('1st')
+  expect(daytime(date2).format('Do')).toEqual('2nd')
+  expect(daytime(date3).format('Do')).toEqual('3rd')
+  expect(daytime(date4).format('Do')).toEqual('4th')
+  expect(daytime(date11).format('Do')).toEqual('11th')
+  expect(daytime(date12).format('Do')).toEqual('12th')
+  expect(daytime(date13).format('Do')).toEqual('13th')
+  expect(daytime(date21).format('Do')).toEqual('21st')
+  expect(daytime(date22).format('Do')).toEqual('22nd')
+  expect(daytime(date23).format('Do')).toEqual('23rd')
+})
+
+Deno.test('Format: should format Unix timestamp patterns', () => {
+  const date = new Date('2026-01-15T12:30:45.789Z')
+  const unixSeconds = Math.floor(date.getTime() / 1000)
+  const unixMilliseconds = date.getTime()
+  expect(daytime(date).format('X')).toEqual(unixSeconds.toString())
+  expect(daytime(date).format('x')).toEqual(unixMilliseconds.toString())
+})
+
+Deno.test('Format: should format timezone offset patterns', () => {
+  const date = new Date('2026-01-15T12:30:45Z')
+  const offsetMinutes = -date.getTimezoneOffset()
+  const offsetHours = Math.floor(Math.abs(offsetMinutes) / 60)
+  const offsetMins = Math.abs(offsetMinutes) % 60
+  const offsetSign = offsetMinutes >= 0 ? '+' : '-'
+  const expectedZZ = `${offsetSign}${String(offsetHours).padStart(2, '0')}${String(
+    offsetMins
+  ).padStart(2, '0')}`
+  const expectedZ = `${offsetSign}${String(offsetHours).padStart(2, '0')}:${String(
+    offsetMins
+  ).padStart(2, '0')}`
+  const resultZ = daytime(date).format('Z')
+  const resultZZ = daytime(date).format('ZZ')
+  expect(resultZ).toEqual(expectedZ)
+  expect(resultZZ).toEqual(expectedZZ)
+  expect(resultZ).toMatch(/^[+-]\d{2}:\d{2}$/)
+  expect(resultZZ).toMatch(/^[+-]\d{4}$/)
 })
 
 Deno.test('Format: should format hour patterns', () => {
@@ -354,4 +406,243 @@ Deno.test('Format: should handle patterns with repeated tokens', () => {
   const date = new Date('2026-01-15T12:30:45Z')
   const result = daytime(date).format('YYYY-YYYY')
   expect(result).toEqual('2026-2026')
+})
+
+Deno.test('Format: should handle custom locale code', () => {
+  const date = new Date('2026-01-15T12:30:45Z')
+  const resultEn = daytime(date).locale('en').format('dddd, MMMM')
+  const resultId = daytime(date).locale('id').format('dddd, MMMM')
+  expect(resultEn).toContain('Thursday')
+  expect(resultEn).toContain('January')
+  expect(resultId).toContain('Januari')
+  expect(resultId).toContain('Kamis')
+})
+
+Deno.test('Format: should handle single-character tokens at start of string', () => {
+  const date = new Date('2026-01-15T12:30:45Z')
+  const resultX = daytime(date).format('X timestamp')
+  const resultx = daytime(date).format('x timestamp')
+  expect(resultX).toMatch(/^\d+ timestamp$/)
+  expect(resultx).toMatch(/^\d+ timestamp$/)
+})
+
+Deno.test('Format: should handle single-character tokens at end of string', () => {
+  const date = new Date('2026-01-15T12:30:45Z')
+  const resultX = daytime(date).format('timestamp X')
+  const resultx = daytime(date).format('timestamp x')
+  expect(resultX).toMatch(/^timestamp \d+$/)
+  expect(resultx).toMatch(/^timestamp \d+$/)
+})
+
+Deno.test('Format: should handle single-character tokens with separators', () => {
+  const date = new Date('2026-01-15T12:30:45Z')
+  const resultX = daytime(date).format('X-x-X')
+  const resultx = daytime(date).format('x-X-x')
+  expect(resultX).toMatch(/^\d+-\d+-\d+$/)
+  expect(resultx).toMatch(/^\d+-\d+-\d+$/)
+})
+
+Deno.test('Format: should skip single-character tokens adjacent to alphabetic chars', () => {
+  const date = new Date('2026-01-15T12:30:45Z')
+  const result = daytime(date).format('xyz')
+  expect(result).toEqual('xyz')
+  const result2 = daytime(date).format('ABC')
+  expect(result2).toEqual('ABC')
+})
+
+Deno.test('Format: should handle all new tokens in combination', () => {
+  const date = new Date('2026-01-15T12:30:45.789Z')
+  const result = daytime(date).format('YYYY-MM-DD Do HH:mm:ss Z ZZ X x')
+  expect(result).toContain('2026')
+  expect(result).toContain('01')
+  expect(result).toContain('15th')
+  expect(result).toMatch(/[+-]\d{2}:\d{2}/)
+  expect(result).toMatch(/[+-]\d{4}/)
+  expect(result).toMatch(/\d{10}/)
+  expect(result).toMatch(/\d{13}/)
+})
+
+Deno.test('Format: should handle timezone offsets for different timezones', () => {
+  const date1 = new Date('2026-01-15T12:00:00Z')
+  const date2 = new Date('2026-07-15T12:00:00Z')
+  const result1Z = daytime(date1).format('Z')
+  const result2Z = daytime(date2).format('Z')
+  const result1ZZ = daytime(date1).format('ZZ')
+  const result2ZZ = daytime(date2).format('ZZ')
+  expect(result1Z).toMatch(/^[+-]\d{2}:\d{2}$/)
+  expect(result2Z).toMatch(/^[+-]\d{2}:\d{2}$/)
+  expect(result1ZZ).toMatch(/^[+-]\d{4}$/)
+  expect(result2ZZ).toMatch(/^[+-]\d{4}$/)
+})
+
+Deno.test('Format: should handle single-character tokens mixed with multi-character tokens', () => {
+  const date = new Date('2026-01-15T12:30:45Z')
+  const result = daytime(date).format('X-YYYY-x-ZZ')
+  expect(result).toMatch(/^\d+-2026-\d+-[+-]\d{4}$/)
+})
+
+Deno.test('Format: should handle ordinal days with all edge cases', () => {
+  const dates = []
+  for (let day = 1; day <= 31; day++) {
+    dates.push(new Date(`2026-01-${String(day).padStart(2, '0')}T12:30:45Z`))
+  }
+  const results = dates.map(d => daytime(d).format('Do'))
+  expect(results[0]).toEqual('1st')
+  expect(results[1]).toEqual('2nd')
+  expect(results[2]).toEqual('3rd')
+  expect(results[3]).toEqual('4th')
+  expect(results[10]).toEqual('11th')
+  expect(results[11]).toEqual('12th')
+  expect(results[12]).toEqual('13th')
+  expect(results[20]).toEqual('21st')
+  expect(results[21]).toEqual('22nd')
+  expect(results[22]).toEqual('23rd')
+  expect(results[30]).toEqual('31st')
+})
+
+Deno.test(
+  'Format: should handle single-character token when prevChar is not alpha at start',
+  () => {
+    const date = new Date('2026-01-15T12:30:45Z')
+    const result = daytime(date).format('X123')
+    expect(result).toMatch(/^\d+123$/)
+  }
+)
+
+Deno.test('Format: should handle single-character token when nextChar is not alpha at end', () => {
+  const date = new Date('2026-01-15T12:30:45Z')
+  const result = daytime(date).format('123x')
+  expect(result).toMatch(/^123\d+$/)
+})
+
+Deno.test('Format: should handle single-character token with numeric prefix and suffix', () => {
+  const date = new Date('2026-01-15T12:30:45Z')
+  const result = daytime(date).format('123x456')
+  expect(result).toMatch(/^123\d+456$/)
+})
+
+Deno.test('Format: should handle single-character token with punctuation', () => {
+  const date = new Date('2026-01-15T12:30:45Z')
+  const resultX = daytime(date).format('X!X?X')
+  const resultx = daytime(date).format('x-x-x')
+  expect(resultX).toMatch(/^\d+!\d+\?\d+$/)
+  expect(resultx).toMatch(/^\d+-\d+-\d+$/)
+})
+
+Deno.test('Format: should handle all single-character tokens in various positions', () => {
+  const date = new Date('2026-01-15T12:30:45Z')
+  expect(daytime(date).format('X')).toMatch(/^\d+$/)
+  expect(daytime(date).format('x')).toMatch(/^\d+$/)
+  expect(daytime(date).format('A')).toMatch(/^(AM|PM)$/)
+  expect(daytime(date).format('a')).toMatch(/^(am|pm)$/)
+  expect(daytime(date).format('D')).toMatch(/^\d+$/)
+  expect(daytime(date).format('H')).toMatch(/^\d+$/)
+  expect(daytime(date).format('M')).toMatch(/^\d+$/)
+  expect(daytime(date).format('S')).toMatch(/^\d+$/)
+  expect(daytime(date).format('d')).toMatch(/^\d+$/)
+  expect(daytime(date).format('h')).toMatch(/^\d+$/)
+  expect(daytime(date).format('m')).toMatch(/^\d+$/)
+  expect(daytime(date).format('s')).toMatch(/^\d+$/)
+})
+
+Deno.test('Format: should handle single-character token searchStart progression', () => {
+  const date = new Date('2026-01-15T12:30:45Z')
+  const result = daytime(date).format('x x x')
+  expect(result).toMatch(/^\d+ \d+ \d+$/)
+})
+
+Deno.test('Format: should handle when result does not include multi-character token', () => {
+  const date = new Date('2026-01-15T12:30:45Z')
+  const result = daytime(date).format('abc')
+  expect(result).toEqual('abc')
+})
+
+Deno.test('Format: should handle boundary conditions for single-character tokens', () => {
+  const date = new Date('2026-01-15T12:30:45Z')
+  expect(daytime(date).format('X').length).toBeGreaterThan(0)
+  expect(daytime(date).format('x').length).toBeGreaterThan(0)
+  expect(daytime(date).format('Z').length).toBeGreaterThan(0)
+  expect(daytime(date).format('ZZ').length).toBeGreaterThan(0)
+})
+
+Deno.test('Format: should handle single-character token at index 0 (start)', () => {
+  const date = new Date('2026-01-15T12:30:45Z')
+  const result = daytime(date).format('X start')
+  expect(result).toMatch(/^\d+ start$/)
+})
+
+Deno.test('Format: should handle single-character token at end (index = length-1)', () => {
+  const date = new Date('2026-01-15T12:30:45Z')
+  const result = daytime(date).format('end x')
+  expect(result).toMatch(/^end \d+$/)
+})
+
+Deno.test('Format: should handle prevChar empty string when index is 0', () => {
+  const date = new Date('2026-01-15T12:30:45Z')
+  const result = daytime(date).format('X')
+  expect(typeof result).toEqual('string')
+  expect(result.length).toBeGreaterThan(0)
+})
+
+Deno.test('Format: should handle nextChar empty string when at end', () => {
+  const date = new Date('2026-01-15T12:30:45Z')
+  const result = daytime(date).format('x')
+  expect(typeof result).toEqual('string')
+  expect(result.length).toBeGreaterThan(0)
+})
+
+Deno.test('Format: should handle case when prevChar is alpha (skip token)', () => {
+  const date = new Date('2026-01-15T12:30:45Z')
+  const result = daytime(date).format('aXb')
+  expect(result).toEqual('aXb')
+})
+
+Deno.test('Format: should handle case when nextChar is alpha (skip token)', () => {
+  const date = new Date('2026-01-15T12:30:45Z')
+  const result = daytime(date).format('aXb')
+  expect(result).toEqual('aXb')
+})
+
+Deno.test(
+  'Format: should handle case when both prevChar and nextChar are alpha (skip token)',
+  () => {
+    const date = new Date('2026-01-15T12:30:45Z')
+    const result = daytime(date).format('aXb')
+    expect(result).toEqual('aXb')
+    const result2 = daytime(date).format('aX')
+    expect(result2).toEqual('aX')
+    const result3 = daytime(date).format('Xb')
+    expect(result3).toEqual('Xb')
+  }
+)
+
+Deno.test('Format: should handle empty pattern', () => {
+  const date = new Date('2026-01-15T12:30:45Z')
+  const result = daytime(date).format('')
+  expect(result).toEqual('')
+})
+
+Deno.test('Format: should handle pattern with only single-character token', () => {
+  const date = new Date('2026-01-15T12:30:45Z')
+  expect(daytime(date).format('X')).toMatch(/^\d+$/)
+  expect(daytime(date).format('x')).toMatch(/^\d+$/)
+  expect(daytime(date).format('D')).toMatch(/^\d+$/)
+})
+
+Deno.test('Format: should handle all tokens comprehensively', () => {
+  const date = new Date('2026-01-15T14:30:45.789Z')
+  const result = daytime(date).format(
+    'YYYY YY MMMM MMM MM M DD D Do dddd ddd dd d HH H hh h mm m ss s SSS SS S A a X x Z ZZ'
+  )
+  expect(result).toContain('2026')
+  expect(result).toContain('26')
+  expect(result).toContain('January')
+  expect(result).toContain('Jan')
+  expect(result).toContain('15th')
+  expect(result).toContain('Thursday')
+  expect(result).toContain('Thu')
+  expect(result).toMatch(/[+-]\d{2}:\d{2}/)
+  expect(result).toMatch(/[+-]\d{4}/)
+  expect(result).toMatch(/\d{10}/)
+  expect(result).toMatch(/\d{13}/)
 })
