@@ -60,12 +60,16 @@ Deno.test('Format: should format timezone offset patterns', () => {
   const offsetHours = Math.floor(Math.abs(offsetMinutes) / 60)
   const offsetMins = Math.abs(offsetMinutes) % 60
   const offsetSign = offsetMinutes >= 0 ? '+' : '-'
-  const expectedZZ = `${offsetSign}${String(offsetHours).padStart(2, '0')}${String(
-    offsetMins
-  ).padStart(2, '0')}`
-  const expectedZ = `${offsetSign}${String(offsetHours).padStart(2, '0')}:${String(
-    offsetMins
-  ).padStart(2, '0')}`
+  const expectedZZ = `${offsetSign}${String(offsetHours).padStart(2, '0')}${
+    String(
+      offsetMins
+    ).padStart(2, '0')
+  }`
+  const expectedZ = `${offsetSign}${String(offsetHours).padStart(2, '0')}:${
+    String(
+      offsetMins
+    ).padStart(2, '0')
+  }`
   const resultZ = daytime(date).format('Z')
   const resultZZ = daytime(date).format('ZZ')
   expect(resultZ).toEqual(expectedZ)
@@ -486,7 +490,7 @@ Deno.test('Format: should handle ordinal days with all edge cases', () => {
   for (let day = 1; day <= 31; day++) {
     dates.push(new Date(`2026-01-${String(day).padStart(2, '0')}T12:30:45Z`))
   }
-  const results = dates.map(d => daytime(d).format('Do'))
+  const results = dates.map((d) => daytime(d).format('Do'))
   expect(results[0]).toEqual('1st')
   expect(results[1]).toEqual('2nd')
   expect(results[2]).toEqual('3rd')

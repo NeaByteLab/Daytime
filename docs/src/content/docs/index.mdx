@@ -1,0 +1,55 @@
+---
+title: Daytime - Modern Date Library for JavaScript
+description: Daytime is a powerful, chainable date library for JavaScript with 103 locales, business day calculations, ISO weeks, timezone support, and rich formatting options. Perfect for Deno, Node.js, and browsers.
+template: splash
+hero:
+  tagline: A chainable date library with formatting and locale support.
+  image:
+    file: ../../assets/houston.webp
+  actions:
+    - text: Get Started
+      link: /getting-started/installation/
+      icon: right-arrow
+    - text: View on GitHub
+      link: https://github.com/NeaByteLab/Daytime
+      icon: github
+      variant: minimal
+---
+
+## Quick Example
+
+```typescript
+import daytime from '@neabyte/daytime'
+
+// Create and format
+const date = daytime('2025-11-15T14:30:45Z')
+console.log(date.format('YYYY-MM-DD Do dddd'))
+// "2025-11-15 15th Saturday"
+
+// Locale support
+console.log(date.locale('en').format('dddd, MMMM Do YYYY'))
+// "Saturday, November 15th 2025"
+
+// Chain operations
+const result = date
+  .add(3, 'month')
+  .subtract(5, 'day')
+  .startOf('week')
+  .nextBusinessDay()
+  .format('YYYY-MM-DD dddd')
+console.log(result)
+// "2026-02-09 Monday"
+```
+
+## Installation
+
+```bash
+# npm
+npm install @neabyte/daytime
+
+# Deno
+deno add jsr:@neabyte/daytime
+
+# CDN (browser)
+import daytime from 'https://esm.sh/@neabyte/daytime'
+```
